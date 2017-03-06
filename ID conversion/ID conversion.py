@@ -41,7 +41,7 @@ for line in listoflines :
                 change_id = re.findall(patternID, source)[0]
                 #print(line,end="")
                 line = line.rstrip()
-                print(line+': '+change_id)
+                print(line+': '+change_id+',')
                 query.write('update datas set id='+change_id+' where id='+line+';\n')
                 query.write('update texts set id='+change_id+' where id='+line+';\n')
             except IndexError :
