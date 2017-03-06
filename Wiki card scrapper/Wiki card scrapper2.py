@@ -46,7 +46,22 @@ for line in listoflines :
                 card_name = re.sub('(?!<dd>|</dd>|<dl>|</dl>|<br>|<br />)(<.*?>)','', card_name)
                 card_name = re.sub('&amp;', '&', card_name)
                 card_name = re.sub('&#160;', ' ', card_name)
-                #regexText = re.compile(r";;\">\n(.*[^<\/td>]*\.)*<\/td>", re.S)
+##                Uncomment for Link Monsters
+##                regexLink = re.compile(r">Link Markers.*?</td>", re.DOTALL)
+##                patternLink = re.compile(regexLink)
+##                link_marker = re.findall(patternLink, source)[0]
+##                link_marker = re.findall(patternLink, source)[0]
+##                link_marker = re.sub('(?!<dd>|</dd>|<dl>|</dl>|<br>|<br />)(<.*?>)','', link_marker)
+##                link_marker = re.sub('"', '""', link_marker)
+##                link_marker = re.sub('<dd>', '\n', link_marker)
+##                link_marker = re.sub('</dd>', '\n', link_marker)
+##                link_marker = re.sub('<dl>', '\n', link_marker)
+##                link_marker = re.sub('</dl>', '\n', link_marker)
+##                link_marker = re.sub('<br />', '\n', link_marker)
+##                link_marker = re.sub('>Link Markers\n', 'Link Markers: ', link_marker)
+##                link_marker = re.sub('&amp;', '&', link_marker)
+##                link_marker = re.sub('&#160;', ' ', link_marker)
+                #regexText = re.compile(r";;\">\n(.*[^<\/td>]*\.)*<\/td>", re.S)                
                 regexText = re.compile(r";;\">\n(.*)")
                 patternText = re.compile(regexText)
                 card_text = re.findall(patternText, source)[0]
@@ -61,6 +76,8 @@ for line in listoflines :
                 card_text = re.sub('&#160;', ' ', card_text)
                 #print('Processing: '+line)
                 #print('update texts set name="'+card_name+'", desc="'+card_text+'" where id='+line+';')
+##                This this for Link Monsters
+##                query.write('update texts set name="'+card_name+'", desc="'+link_marker+"\n\n"+card_text+'" where id='+line+';')
                 query.write('update texts set name="'+card_name+'", desc="'+card_text+'" where id='+line+';')
             except IndexError :
                 wiki_url = "http://yugioh.wikia.com/wiki/" + quote(name) + "_(card)"
@@ -76,9 +93,9 @@ for line in listoflines :
                         card_name = re.sub('(?!<dd>|</dd>|<dl>|</dl>|<br>|<br />)(<.*?>)','', card_name)
                         card_name = re.sub('&amp;', '&', card_name)
                         card_name = re.sub('&#160;', ' ', card_name)
-                        #regexText = re.compile(r";;\">\n(.*[^<\/td>]*\.)*<\/td>", re.S)
-                        regexText = re.compile(r";;\">\n(.*)")
-                        patternText = re.compile(regexText)
+                        regexText = re.compile(r";;\">\n<dl><dt> Pendulum Effect\n(.*[^<\/td>]*\.)*<\/td>", re.DOTALL)
+                        #regexText = re.compile(r";;\">\n(.*)")
+                        patternText = re.compile(regexText, re.DOTALL)
                         card_text = re.findall(patternText, source)[0]
                         card_text = re.sub('(?!<dd>|</dd>|<dl>|</dl>|<br>|<br />)(<.*?>)','', card_text)
                         card_text = re.sub('"', '""', card_text)
