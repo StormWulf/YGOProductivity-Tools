@@ -61,8 +61,9 @@ for line in listoflines :
 ##                link_marker = re.sub('>Link Markers\n', 'Link Markers: ', link_marker)
 ##                link_marker = re.sub('&amp;', '&', link_marker)
 ##                link_marker = re.sub('&#160;', ' ', link_marker)
-                #regexText = re.compile(r";;\">\n(.*[^<\/td>]*\.)*<\/td>", re.S)                
-                regexText = re.compile(r";;\">\n(.*)")
+                regexText = re.compile(r";;\">\n(.*?)<\/td>", re.DOTALL)                
+                #regexText = re.compile(r";;\">\n(.*)")
+##                regexText = re.compile(r"<span lang=\"fr\".*?</table>", re.DOTALL)
                 patternText = re.compile(regexText)
                 card_text = re.findall(patternText, source)[0]
                 card_text = re.sub('(?!<dd>|</dd>|<dl>|</dl>|<br>|<br />)(<.*?>)','', card_text)
@@ -74,6 +75,8 @@ for line in listoflines :
                 card_text = re.sub('<br />', '\n', card_text)
                 card_text = re.sub('&amp;', '&', card_text)
                 card_text = re.sub('&#160;', ' ', card_text)
+                card_text = re.sub('\n Pendulum Effect\n\n ', 'Pendulum Effect\n', card_text)
+                card_text = re.sub('\n\n\n Monster Effect\n\n ', 'Monster Effect\n', card_text)
                 #print('Processing: '+line)
                 #print('update texts set name="'+card_name+'", desc="'+card_text+'" where id='+line+';')
 ##                This this for Link Monsters
@@ -93,9 +96,9 @@ for line in listoflines :
                         card_name = re.sub('(?!<dd>|</dd>|<dl>|</dl>|<br>|<br />)(<.*?>)','', card_name)
                         card_name = re.sub('&amp;', '&', card_name)
                         card_name = re.sub('&#160;', ' ', card_name)
-                        regexText = re.compile(r";;\">\n<dl><dt> Pendulum Effect\n(.*[^<\/td>]*\.)*<\/td>", re.DOTALL)
-                        #regexText = re.compile(r";;\">\n(.*)")
-                        patternText = re.compile(regexText, re.DOTALL)
+                        #regexText = re.compile(r";;\">\n(.*[^<\/td>]*\.)*<\/td>", re.DOTALL)    
+                        regexText = re.compile(r";;\">\n(.*)")
+                        patternText = re.compile(regexText)
                         card_text = re.findall(patternText, source)[0]
                         card_text = re.sub('(?!<dd>|</dd>|<dl>|</dl>|<br>|<br />)(<.*?>)','', card_text)
                         card_text = re.sub('"', '""', card_text)
