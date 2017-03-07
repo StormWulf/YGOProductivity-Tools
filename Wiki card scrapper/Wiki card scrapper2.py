@@ -38,9 +38,25 @@ for line in listoflines :
         if page.getcode() == 200 :
             sourcepage = page.read()
             source = sourcepage.decode("utf-8")
+            #English
             regexName = re.compile(r"data\">\n(.*)</td>")
+            #Spanish
+##            regexName = re.compile(r"data\">\n<span lang=\"es\">(.*?)<\/span>")
+            #French
+##            regexName = re.compile(r"data\">\n<span lang=\"fr\">(.*?)<\/span>")
+            #German
+##            regexName = re.compile(r"data\">\n<span lang=\"de\">(.*?)<\/span>")
+            #Italian
+##            regexName = re.compile(r"data\">\n<span lang=\"it\">(.*?)<\/span>")
+            #Portuguese
+##            regexName = re.compile(r"data\">\n<span lang=\"pt\">(.*?)<\/span>")
+            #Korean
+##            regexName = re.compile(r"data\">\n<span lang=\"ko\">(.*?)<\/span>")
+            #Japanese
+##            regexName = re.compile(r"data\">\n<span lang=\"ja\">(.*?)<\/span>")
             patternName = re.compile(regexName)
             try :
+                
                 card_name = re.findall(patternName, source)[0]
                 card_name = re.sub('"', '""', card_name)
                 card_name = re.sub('(?!<dd>|</dd>|<dl>|</dl>|<br>|<br />)(<.*?>)','', card_name)
@@ -61,10 +77,17 @@ for line in listoflines :
 ##                link_marker = re.sub('>Link Markers\n', 'Link Markers: ', link_marker)
 ##                link_marker = re.sub('&amp;', '&', link_marker)
 ##                link_marker = re.sub('&#160;', ' ', link_marker)
-                regexText = re.compile(r";;\">\n(.*?)<\/td>", re.DOTALL)                
-                #regexText = re.compile(r";;\">\n(.*)")
-##                regexText = re.compile(r"<span lang=\"fr\".*?</table>", re.DOTALL)
+                #English
+                regexText = re.compile(r";;\">\n(.*?)<\/td>", re.DOTALL)
                 patternText = re.compile(regexText)
+##                0 = English
+##                1 = French
+##                2 = German
+##                3 = Italian
+##                4 = Portuguese
+##                5 = Spanish
+##                6 = Japanese
+##                7 = Korean
                 card_text = re.findall(patternText, source)[0]
                 card_text = re.sub('(?!<dd>|</dd>|<dl>|</dl>|<br>|<br />)(<.*?>)','', card_text)
                 card_text = re.sub('"', '""', card_text)
@@ -75,8 +98,27 @@ for line in listoflines :
                 card_text = re.sub('<br />', '\n', card_text)
                 card_text = re.sub('&amp;', '&', card_text)
                 card_text = re.sub('&#160;', ' ', card_text)
+                #English
                 card_text = re.sub('\n Pendulum Effect\n\n ', 'Pendulum Effect\n', card_text)
                 card_text = re.sub('\n\n\n Monster Effect\n\n ', 'Monster Effect\n', card_text)
+                #French
+                card_text = re.sub('\n Effet Pendule\n\n ', 'Effet Pendule\n', card_text)
+                card_text = re.sub('\n\n\n Effet de Monstre\n\n ', 'Effet de Monstre\n', card_text)
+                #German
+                card_text = re.sub('\n Pendeleffekt\n\n ', 'Pendeleffekt\n', card_text)
+                card_text = re.sub('\n\n\n Monstereffekt\n\n ', 'Monstereffekt\n', card_text)
+                #Portuguese
+                card_text = re.sub('\n Efeito de Pêndulo\n\n ', 'Efeito de Pêndulo\n', card_text)
+                card_text = re.sub('\n\n\n Efeito de Monstro\n\n ', 'Efeito de Monstro\n', card_text)               
+                #Spanish
+                card_text = re.sub('\n Efecto de Péndulo\n\n ', 'Efecto de Péndulo\n', card_text)
+                card_text = re.sub('\n\n\n Efecto de Monstruo\n\n ', 'Efecto de Monstruo\n', card_text)
+                #Japanese
+                card_text = re.sub('\n Ｐ（ペンデュラム）効（こう）果（か）\n\n ', 'Ｐ（ペンデュラム）効（こう）果（か）\n', card_text)
+                card_text = re.sub('\n\n\n モンスターの効（こう）果（か）\n\n ', 'モンスターの効（こう）果（か）\n', card_text)
+                #Korean
+                card_text = re.sub('\n 펜듈럼 효과\n\n ', '펜듈럼 효과\n', card_text)
+                card_text = re.sub('\n\n\n 몬스터의 효과\n\n ', '몬스터의 효과\n', card_text)                
                 #print('Processing: '+line)
                 #print('update texts set name="'+card_name+'", desc="'+card_text+'" where id='+line+';')
 ##                This this for Link Monsters
