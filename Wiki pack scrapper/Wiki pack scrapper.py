@@ -80,19 +80,21 @@ for line in listoflines :
                # page = urr.urlopen(wiki_url)
 ##            print(name+" failed due to HTTPError")
 ##            fail.write(name+" failed due to HTTPError\n")
-            regexTCG = re.compile(r"English</caption>.*?\d\">(.*?) </td", re.DOTALL)
-            patternTCG = re.compile(regexTCG)
-            TCG_date = re.findall(patternTCG, source)[0]
-            query.write('update dates set tcg_date="'+TCG_date+'" where id='+line+';')
-            #OCG date
-            regexOCG = re.compile(r"Japanese name</th>.*?\d\">(.*?) </td", re.DOTALL)
-            patternOCG = re.compile(regexOCG)
-            OCG_date = re.findall(patternOCG, source)[0]
-            query.write('update dates set ocg_date="'+OCG_date+'" where id='+line+';')
-            #continue
-            #except urllib.error.HTTPError as err :
-                #pass
-            #continue
+            try:
+                regexTCG = re.compile(r"English</caption>.*?\d\">(.*?) </td", re.DOTALL)
+                patternTCG = re.compile(regexTCG)
+                TCG_date = re.findall(patternTCG, source)[0]
+                query.write('update dates set tcg_date="'+TCG_date+'" where id='+line+';')
+            except IndexError :
+                query.write('update dates set tcg_date=null where id='+line+';')
+            try: 
+                #OCG date
+                regexOCG = re.compile(r"Japanese name</th>.*?\d\">(.*?) </td", re.DOTALL)
+                patternOCG = re.compile(regexOCG)
+                OCG_date = re.findall(patternOCG, source)[0]
+                query.write('update dates set ocg_date="'+OCG_date+'" where id='+line+';')
+            except IndexError :
+                query.write('update dates set ocg_date=null where id='+line+';')
         else :
             raise
 query.close()

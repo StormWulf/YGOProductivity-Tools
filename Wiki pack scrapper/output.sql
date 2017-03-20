@@ -14,4 +14,14 @@ update dates set tcg_date="2017-02-09" where id=48905153
 ;update dates set ocg_date="1999-03-06" where id=45231177
 ;update dates set tcg_date="2002-03-08" where id=89631139
 ;update dates set ocg_date="1999-03-06" where id=89631139
-;update dates set tcg_date="2017-02-09" where id=85115440;update dates set ocg_date="2016-10-08" where id=85115440;
+;update dates set tcg_date="2017-02-09" where id=85115440
+;update dates set ocg_date="2016-10-08" where id=85115440
+;update dates set tcg_date="2008-08-09" where id=44508094
+;update dates set ocg_date="2008-04-19" where id=44508094
+;update dates set tcg_date="2002-03-08" where id=12580477
+;update dates set ocg_date="1999-03-06" where id=12580477
+;update dates set tcg_date=null where id=41375811
+;update dates set ocg_date="2017-01-14" where id=41375811
+;update dates set tcg_date="2016-11-03" where id=28369508
+;update dates set ocg_date=null where id=28369508
+;update dates set tcg_date=null where id=101001018;update dates set ocg_date="2017-04-15" where id=101001018;
