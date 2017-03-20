@@ -1,27 +1,25 @@
-update dates set tcg_date="2017-02-09" where id=48905153
-;update dates set ocg_date="2016-10-08" where id=48905153
-;update dates set tcg_date="2007-04-21" where id=40044918
-;update dates set ocg_date="2006-08-19" where id=40044918
-;update dates set tcg_date="2002-03-08" where id=74677422
-;update dates set ocg_date="1999-05-27" where id=74677422
-;update dates set tcg_date="2002-03-08" where id=46986414
-;update dates set ocg_date="1999-02-04" where id=46986414
-;update dates set tcg_date="2002-03-08" where id=39111158
-;update dates set ocg_date="1999-08-26" where id=39111158
-;update dates set tcg_date="2002-03-08" where id=76184692
-;update dates set ocg_date="1999-02-04" where id=76184692
-;update dates set tcg_date="2002-03-08" where id=45231177
-;update dates set ocg_date="1999-03-06" where id=45231177
-;update dates set tcg_date="2002-03-08" where id=89631139
-;update dates set ocg_date="1999-03-06" where id=89631139
-;update dates set tcg_date="2017-02-09" where id=85115440
-;update dates set ocg_date="2016-10-08" where id=85115440
-;update dates set tcg_date="2008-08-09" where id=44508094
-;update dates set ocg_date="2008-04-19" where id=44508094
-;update dates set tcg_date="2002-03-08" where id=12580477
-;update dates set ocg_date="1999-03-06" where id=12580477
-;update dates set tcg_date=null where id=41375811
-;update dates set ocg_date="2017-01-14" where id=41375811
-;update dates set tcg_date="2016-11-03" where id=28369508
-;update dates set ocg_date=null where id=28369508
-;update dates set tcg_date=null where id=101001018;update dates set ocg_date="2017-04-15" where id=101001018;
+INSERT OR REPLACE INTO "tcg" VALUES ("48905153
+","RATE-EN053","","","2017-02-09");INSERT OR REPLACE INTO "ocg" VALUES ("48905153
+","RATE-JP053","","","2016-10-08");INSERT OR REPLACE INTO "tcg" VALUES ("40044918
+","JUMP-EN012","","","2007-04-21");INSERT OR REPLACE INTO "ocg" VALUES ("40044918
+","VJMP-JP017","","","2006-08-19");INSERT OR REPLACE INTO "tcg" VALUES ("74677422
+","LOB-070","","","2002-03-08");INSERT OR REPLACE INTO "ocg" VALUES ("74677422
+","PG-09","","","1999-05-27");INSERT OR REPLACE INTO "tcg" VALUES ("46986414
+","LOB-005","","","2002-03-08");INSERT OR REPLACE INTO "ocg" VALUES ("46986414
+","LB-05","","","1999-02-04");INSERT OR REPLACE INTO "tcg" VALUES ("39111158
+","LOB-000","","","2002-03-08");INSERT OR REPLACE INTO "ocg" VALUES ("39111158
+","P3-04","","","1999-08-26");INSERT OR REPLACE INTO "tcg" VALUES ("76184692
+","LOB-002","","","2002-03-08");INSERT OR REPLACE INTO "ocg" VALUES ("76184692
+","LB-02","","","1999-02-04");INSERT OR REPLACE INTO "tcg" VALUES ("45231177
+","LOB-003","","","2002-03-08");INSERT OR REPLACE INTO "ocg" VALUES ("45231177
+","LB-03","","","1999-03-06");INSERT OR REPLACE INTO "tcg" VALUES ("89631139
+","LOB-001","","","2002-03-08");INSERT OR REPLACE INTO "ocg" VALUES ("89631139
+","LB-01","","","1999-03-06");INSERT OR REPLACE INTO "tcg" VALUES ("85115440
+","RATE-EN051","","","2017-02-09");INSERT OR REPLACE INTO "ocg" VALUES ("85115440
+","RATE-JP051","","","2016-10-08");INSERT OR REPLACE INTO "tcg" VALUES ("44508094
+","CT05-EN001","","","2008-08-09");INSERT OR REPLACE INTO "ocg" VALUES ("44508094
+","TDGS-JP040","","","2008-04-19");INSERT OR REPLACE INTO "tcg" VALUES ("12580477
+","LOB-053","","","2002-03-08");INSERT OR REPLACE INTO "ocg" VALUES ("12580477
+","LB-52","","","1999-03-06");INSERT OR REPLACE INTO "ocg" VALUES ("41375811
+","MACR-JP048","","","2017-01-14");INSERT OR REPLACE INTO "tcg" VALUES ("28369508
+","INOV-EN085","","","2016-11-03");INSERT OR REPLACE INTO "ocg" VALUES ("101001018","COTD-JP018","","","2017-04-15");

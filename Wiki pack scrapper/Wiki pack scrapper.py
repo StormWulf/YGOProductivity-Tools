@@ -40,34 +40,43 @@ for line in listoflines :
             try:
                 #TCG date
                 regexTCG = re.compile(r"North American English</caption>.*?\d\">(.*?) </td", re.DOTALL)
-                #regexTCG = re.compile(r"French name</th>.*?\d\">(.*?) </td", re.DOTALL)
                 patternTCG = re.compile(regexTCG)
                 TCG_date = re.findall(patternTCG, source)[0]
-                query.write('update dates set tcg_date="'+TCG_date+'" where id='+line+';')
+                regexTCGpackid = re.compile(r"North American English</caption>.*?\"mw-redirect\">(.*?)</a>", re.DOTALL)
+                patternTCGpackid = re.compile(regexTCGpackid)
+                tcg_pack_id = re.findall(patternTCGpackid, source)[0]
+                query.write('INSERT OR REPLACE INTO "tcg" VALUES ("'+line+'","'+tcg_pack_id+'","","","'+TCG_date+'");')
                 #OCG date
                 regexOCG = re.compile(r"Japanese name</th>.*?\d\">(.*?) </td", re.DOTALL)
                 patternOCG = re.compile(regexOCG)
                 OCG_date = re.findall(patternOCG, source)[0]
-                query.write('update dates set ocg_date="'+OCG_date+'" where id='+line+';')
+                regexOCGpackid = re.compile(r"Japanese</caption>.*?\"mw-redirect\">(.*?)</a>", re.DOTALL)
+                patternOCGpackid = re.compile(regexOCGpackid)
+                OCG_pack_id = re.findall(patternOCGpackid, source)[0]
+                query.write('INSERT OR REPLACE INTO "ocg" VALUES ("'+line+'","'+OCG_pack_id+'","","","'+OCG_date+'");')
             except IndexError :
                 wiki_url = "http://yugioh.wikia.com/wiki/" + quote(name) + "_(card)"
                 page = urr.urlopen(wiki_url)
                 if page.getcode() == 200 :
                     sourcepage = page.read()
                     source = sourcepage.decode("utf-8")
-                    regexName = re.compile(r"data\">\n(.*)</td>")
-                    patternName = re.compile(regexName)
                     try :
                         #TCG date
                         regexTCG = re.compile(r"North American English</caption>.*?\d\">(.*?) </td", re.DOTALL)
                         patternTCG = re.compile(regexTCG)
-                        TCG_date = re.findall(patternTCG, source)[0]
-                        query.write('update dates set tcg_date="'+TCG_date+'" where id='+line+';')
+                        TCG_date = re.findall(patternTCG, source)[0]                        
+                        regexTCGpackid = re.compile(r"North American English</caption>.*?\"mw-redirect\">(.*?)</a>", re.DOTALL)
+                        patternTCGpackid = re.compile(regexTCGpackid)
+                        tcg_pack_id = re.findall(patternTCGpackid, source)[0]
+                        query.write('INSERT OR REPLACE INTO "tcg" VALUES ("'+line+'","'+tcg_pack_id+'","","","'+TCG_date+'");')
                         #OCG date
                         regexOCG = re.compile(r"Japanese name</th>.*?\d\">(.*?) </td", re.DOTALL)
                         patternOCG = re.compile(regexOCG)
                         OCG_date = re.findall(patternOCG, source)[0]
-                        query.write('update dates set ocg_date="'+OCG_date+'" where id='+line+';')
+                        regexOCGpackid = re.compile(r"Japanese</caption>.*?\"mw-redirect\">(.*?)</a>", re.DOTALL)
+                        patternOCGpackid = re.compile(regexOCGpackid)
+                        OCG_pack_id = re.findall(patternOCGpackid, source)[0]
+                        query.write('INSERT OR REPLACE INTO "ocg" VALUES ("'+line+'","'+OCG_pack_id+'","","","'+OCG_date+'");')
                     except IndexError :
                         print(name+" failed due to IndexError")
                         fail.write(name+" failed due to IndexError\n")
@@ -84,17 +93,23 @@ for line in listoflines :
                 regexTCG = re.compile(r"English</caption>.*?\d\">(.*?) </td", re.DOTALL)
                 patternTCG = re.compile(regexTCG)
                 TCG_date = re.findall(patternTCG, source)[0]
-                query.write('update dates set tcg_date="'+TCG_date+'" where id='+line+';')
+                regexTCGpackid = re.compile(r"English</caption>.*?\"mw-redirect\">(.*?)</a>", re.DOTALL)
+                patternTCGpackid = re.compile(regexTCGpackid)
+                tcg_pack_id = re.findall(patternTCGpackid, source)[0]
+                query.write('INSERT OR REPLACE INTO "tcg" VALUES ("'+line+'","'+tcg_pack_id+'","","","'+TCG_date+'");')
             except IndexError :
-                query.write('update dates set tcg_date=null where id='+line+';')
+                pass
             try: 
                 #OCG date
                 regexOCG = re.compile(r"Japanese name</th>.*?\d\">(.*?) </td", re.DOTALL)
                 patternOCG = re.compile(regexOCG)
                 OCG_date = re.findall(patternOCG, source)[0]
-                query.write('update dates set ocg_date="'+OCG_date+'" where id='+line+';')
+                regexOCGpackid = re.compile(r"Japanese</caption>.*?\"mw-redirect\">(.*?)</a>", re.DOTALL)
+                patternOCGpackid = re.compile(regexOCGpackid)
+                OCG_pack_id = re.findall(patternOCGpackid, source)[0]
+                query.write('INSERT OR REPLACE INTO "ocg" VALUES ("'+line+'","'+OCG_pack_id+'","","","'+OCG_date+'");')
             except IndexError :
-                query.write('update dates set ocg_date=null where id='+line+';')
+                pass
         else :
             raise
 query.close()
