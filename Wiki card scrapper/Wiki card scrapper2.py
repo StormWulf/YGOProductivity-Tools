@@ -56,7 +56,6 @@ for line in listoflines :
 ##            regexName = re.compile(r"data\">\n<span lang=\"ja\">(.*?)<\/span>")
             patternName = re.compile(regexName)
             try :
-                
                 card_name = re.findall(patternName, source)[0]
                 card_name = re.sub('"', '""', card_name)
                 card_name = re.sub('(?!<dd>|</dd>|<dl>|</dl>|<br>|<br />)(<.*?>)','', card_name)
@@ -65,7 +64,6 @@ for line in listoflines :
 ##                Uncomment for Link Monsters
 ##                regexLink = re.compile(r">Link Markers.*?</td>", re.DOTALL)
 ##                patternLink = re.compile(regexLink)
-##                link_marker = re.findall(patternLink, source)[0]
 ##                link_marker = re.findall(patternLink, source)[0]
 ##                link_marker = re.sub('(?!<dd>|</dd>|<dl>|</dl>|<br>|<br />)(<.*?>)','', link_marker)
 ##                link_marker = re.sub('"', '""', link_marker)
@@ -79,6 +77,18 @@ for line in listoflines :
 ##                link_marker = re.sub('&#160;', ' ', link_marker)
                 #English
                 regexText = re.compile(r";;\">\n(.*?)<\/td>", re.DOTALL)
+                #Spanish
+##                regexText = re.compile(r";;\">\n<span lang=\"es\">(.*?)<\/td>",re.DOTALL)
+##                regexText = re.compile(r";;\">\n<dl><dt> <span lang=\"es\">(.*?)<\/td>",re.DOTALL)
+                #French
+##                regexText = re.compile(r";;\">\n<span lang=\"fr\">(.*?)<\/td>",re.DOTALL)
+##                regexText = re.compile(r";;\">\n<dl><dt> <span lang=\"fr\">(.*?)<\/td>",re.DOTALL)
+                #German
+##                regexText = re.compile(r";;\">\n<span lang=\"de\">(.*?)<\/td>",re.DOTALL)
+##                regexText = re.compile(r";;\">\n<dl><dt> <span lang=\"de\">(.*?)<\/td>",re.DOTALL)
+                #Italian
+##                regexText = re.compile(r";;\">\n<span lang=\"it\">(.*?)<\/td>",re.DOTALL)
+##                regexText = re.compile(r";;\">\n<dl><dt> <span lang=\"it\">(.*?)<\/td>",re.DOTALL)
                 patternText = re.compile(regexText)
 ##                0 = English
 ##                1 = French
@@ -102,17 +112,20 @@ for line in listoflines :
                 card_text = re.sub('\n Pendulum Effect\n\n ', 'Pendulum Effect\n', card_text)
                 card_text = re.sub('\n\n\n Monster Effect\n\n ', 'Monster Effect\n', card_text)
                 #French
-                card_text = re.sub('\n Effet Pendule\n\n ', 'Effet Pendule\n', card_text)
-                card_text = re.sub('\n\n\n Effet de Monstre\n\n ', 'Effet de Monstre\n', card_text)
+                card_text = re.sub('Effet Pendule\n\n ', 'Effet Pendule\n', card_text)
+                card_text = re.sub('\n\n\n\n\n Effet de Monstre\n\n ', '\n\nEffet de Monstre\n', card_text)
                 #German
-                card_text = re.sub('\n Pendeleffekt\n\n ', 'Pendeleffekt\n', card_text)
-                card_text = re.sub('\n\n\n Monstereffekt\n\n ', 'Monstereffekt\n', card_text)
+                card_text = re.sub('Pendeleffekt\n\n ', 'Pendeleffekt\n', card_text)
+                card_text = re.sub('\n\n\n\n\n Monstereffekt\n\n ', '\n\nMonstereffekt\n', card_text)
+                #Italian
+                card_text = re.sub('Effetto Pendulum\n\n ', 'Effetto Pendulum\n', card_text)
+                card_text = re.sub('\n\n\n\n\n Effetto Mostro\n\n ', '\n\nEffetto Mostro\n', card_text)
                 #Portuguese
                 card_text = re.sub('\n Efeito de Pêndulo\n\n ', 'Efeito de Pêndulo\n', card_text)
                 card_text = re.sub('\n\n\n Efeito de Monstro\n\n ', 'Efeito de Monstro\n', card_text)               
                 #Spanish
-                card_text = re.sub('\n Efecto de Péndulo\n\n ', 'Efecto de Péndulo\n', card_text)
-                card_text = re.sub('\n\n\n Efecto de Monstruo\n\n ', 'Efecto de Monstruo\n', card_text)
+                card_text = re.sub('Efecto de Péndulo\n\n ', 'Efecto de Péndulo\n', card_text)
+                card_text = re.sub('\n\n\n\n\n Efecto de Monstruo\n\n ', '\n\nEfecto de Monstruo\n', card_text)
                 #Japanese
                 card_text = re.sub('\n Ｐ（ペンデュラム）効（こう）果（か）\n\n ', 'Ｐ（ペンデュラム）効（こう）果（か）\n', card_text)
                 card_text = re.sub('\n\n\n モンスターの効（こう）果（か）\n\n ', 'モンスターの効（こう）果（か）\n', card_text)
@@ -137,9 +150,8 @@ for line in listoflines :
                         card_name = re.sub('"', '""', card_name)
                         card_name = re.sub('(?!<dd>|</dd>|<dl>|</dl>|<br>|<br />)(<.*?>)','', card_name)
                         card_name = re.sub('&amp;', '&', card_name)
-                        card_name = re.sub('&#160;', ' ', card_name)
-                        #regexText = re.compile(r";;\">\n(.*[^<\/td>]*\.)*<\/td>", re.DOTALL)    
-                        regexText = re.compile(r";;\">\n(.*)")
+                        card_name = re.sub('&#160;', ' ', card_name) 
+                        regexText = re.compile(r";;\">\n(.*?)<\/td>", re.DOTALL)
                         patternText = re.compile(regexText)
                         card_text = re.findall(patternText, source)[0]
                         card_text = re.sub('(?!<dd>|</dd>|<dl>|</dl>|<br>|<br />)(<.*?>)','', card_text)
