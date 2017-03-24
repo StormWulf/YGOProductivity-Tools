@@ -1,0 +1,40 @@
+Cyber_End_Dragon failed due to an issue with Wiki page
+Cyber_End_Dragon failed due to an issue with Wiki page
+Shapesnatch failed due to an issue with Wiki page
+Black_Luster_Soldier failed due to an issue with Wiki page
+Elemental_HERO_Wildedge failed due to an issue with Wiki page
+Chronograph_Sorcerer failed due to an issue with Wiki page
+Synchro_Material failed due to IndexError
+Halfway_to_Forever failed due to IndexError
+Red_Nova failed due to IndexError
+Onslaught_of_the_Fire_Kings failed due to IndexError
+Legacy_of_a_HERO failed due to an issue with Wiki page
+Windaar,_Sage_of_Gusto failed due to an issue with Wiki page
+Elemental_HERO_Flame_Wingman failed due to an issue with Wiki page
+Duelist_Alliance failed due to IndexError
+Silent_Magician failed due to IndexError
+Return failed due to IndexError
+Startime_Magician failed due to an issue with Wiki page
+Chthonian_Soldier failed due to an issue with Wiki page
+Elemental_HERO_Bladedge failed due to an issue with Wiki page
+Elemental_HERO_Thunder_Giant failed due to an issue with Wiki page
+Lillybot failed due to IndexError
+Cyber_Dragon failed due to an issue with Wiki page
+Cyber_Dragon failed due to an issue with Wiki page
+Orbital_7 failed due to IndexError
+Princess_Cologne failed due to IndexError
+Astrograph_Sorcerer failed due to an issue with Wiki page
+Creeping_Darkness failed due to IndexError
+Elemental_HERO_Bubbleman failed due to an issue with Wiki page
+Blessings_for_Gusto failed due to an issue with Wiki page
+Light_of_Destruction failed due to IndexError
+Ancient_Gear_Golem failed due to an issue with Wiki page
+Contact_with_Gusto failed due to an issue with Wiki page
+Elemental_HERO_Clayman failed due to an issue with Wiki page
+Generation_Force failed due to IndexError
+Passionate_Duelists failed due to IndexError
+Clearwing_Fast_Dragon failed due to an issue with Wiki page
+Caam,_Serenity_of_Gusto failed due to an issue with Wiki page
+Winged_Kuriboh_LV10 failed due to an issue with Wiki page
+D/D/D_Destiny_King_Zero_Laplace failed due to an issue with Wiki page
+Decode_Talker failed due to an issue with Wiki page

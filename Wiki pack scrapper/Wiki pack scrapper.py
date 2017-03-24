@@ -8,16 +8,18 @@ import sys
 import re
 import sqlite3
 
-sys.argv = ["Wiki pack scrapper.py", "input.txt", "output.sql", "failed.txt"]
+sys.argv = ["Wiki pack scrapper.py", "input.txt", "tcg_output.sql", "ocg_output.sql", "failed.txt"]
 input_file = sys.argv[1]
-output_file = sys.argv[2]
-failed_file = sys.argv[3]
+tcg_output_file = sys.argv[2]
+ocg_output_file = sys.argv[3]
+failed_file = sys.argv[4]
 #Edit this path if used by a different machine
 conn = sqlite3.connect( "C:\\Users\\auron\\OneDrive\\Documents\\GitHub\\YGOPro-Salvation-Server\\http\\ygopro\\databases\\0-en-OCGTCG.cdb" )
 curs = conn.cursor()
 
 database = open(input_file, "r")
-query = open(output_file, "w", encoding='utf-8')
+tcg_query = open(tcg_output_file, "w", encoding='utf-8')
+ocg_query = open(ocg_output_file, "w", encoding='utf-8')
 fail = open(failed_file, "w", encoding='utf-8')
 listoflines = database.readlines()
 database.close()
@@ -45,7 +47,12 @@ for line in listoflines :
                 regexTCGpackid = re.compile(r"North American English</caption>.*?\"mw-redirect\">(.*?)</a>", re.DOTALL)
                 patternTCGpackid = re.compile(regexTCGpackid)
                 tcg_pack_id = re.findall(patternTCGpackid, source)[0]
-                query.write('INSERT OR REPLACE INTO "tcg" VALUES ("'+line+'","'+tcg_pack_id+'","","","'+TCG_date+'");')
+                if len(tcg_pack_id) > 10 :
+                    tcg_pack_id = ''
+                if len(TCG_date) > 15 :
+                    fail.write(name+" failed due to an issue with Wiki page")
+                else :
+                    tcg_query.write('INSERT OR REPLACE INTO "pack" VALUES ("'+line+'","'+tcg_pack_id+'","","","'+TCG_date+'");')
                 #OCG date
                 regexOCG = re.compile(r"Japanese name</th>.*?\d\">(.*?) </td", re.DOTALL)
                 patternOCG = re.compile(regexOCG)
@@ -53,7 +60,12 @@ for line in listoflines :
                 regexOCGpackid = re.compile(r"Japanese</caption>.*?\"mw-redirect\">(.*?)</a>", re.DOTALL)
                 patternOCGpackid = re.compile(regexOCGpackid)
                 OCG_pack_id = re.findall(patternOCGpackid, source)[0]
-                query.write('INSERT OR REPLACE INTO "ocg" VALUES ("'+line+'","'+OCG_pack_id+'","","","'+OCG_date+'");')
+                if len(OCG_pack_id) > 10 :
+                    OCG_pack_id = ''
+                if len(OCG_date) > 15 :
+                    fail.write(name+" failed due to an issue with Wiki page")
+                else :
+                    ocg_query.write('INSERT OR REPLACE INTO "pack" VALUES ("'+line+'","'+OCG_pack_id+'","","","'+OCG_date+'");')
             except IndexError :
                 wiki_url = "http://yugioh.wikia.com/wiki/" + quote(name) + "_(card)"
                 page = urr.urlopen(wiki_url)
@@ -68,7 +80,12 @@ for line in listoflines :
                         regexTCGpackid = re.compile(r"North American English</caption>.*?\"mw-redirect\">(.*?)</a>", re.DOTALL)
                         patternTCGpackid = re.compile(regexTCGpackid)
                         tcg_pack_id = re.findall(patternTCGpackid, source)[0]
-                        query.write('INSERT OR REPLACE INTO "tcg" VALUES ("'+line+'","'+tcg_pack_id+'","","","'+TCG_date+'");')
+                        if len(tcg_pack_id) > 10 :
+                            tcg_pack_id = ''
+                        if len(TCG_date) > 15 :
+                            fail.write(name+" failed due to an issue with Wiki page")
+                        else :
+                            tcg_query.write('INSERT OR REPLACE INTO "pack" VALUES ("'+line+'","'+tcg_pack_id+'","","","'+TCG_date+'");')
                         #OCG date
                         regexOCG = re.compile(r"Japanese name</th>.*?\d\">(.*?) </td", re.DOTALL)
                         patternOCG = re.compile(regexOCG)
@@ -76,7 +93,12 @@ for line in listoflines :
                         regexOCGpackid = re.compile(r"Japanese</caption>.*?\"mw-redirect\">(.*?)</a>", re.DOTALL)
                         patternOCGpackid = re.compile(regexOCGpackid)
                         OCG_pack_id = re.findall(patternOCGpackid, source)[0]
-                        query.write('INSERT OR REPLACE INTO "ocg" VALUES ("'+line+'","'+OCG_pack_id+'","","","'+OCG_date+'");')
+                        if len(OCG_pack_id) > 10 :
+                            OCG_pack_id = ''
+                        if len(OCG_date) > 15 :
+                            fail.write(name+" failed due to an issue with Wiki page")
+                        else :
+                            ocg_query.write('INSERT OR REPLACE INTO "pack" VALUES ("'+line+'","'+OCG_pack_id+'","","","'+OCG_date+'");')
                     except IndexError :
                         print(name+" failed due to IndexError")
                         fail.write(name+" failed due to IndexError\n")
@@ -96,7 +118,10 @@ for line in listoflines :
                 regexTCGpackid = re.compile(r"English</caption>.*?\"mw-redirect\">(.*?)</a>", re.DOTALL)
                 patternTCGpackid = re.compile(regexTCGpackid)
                 tcg_pack_id = re.findall(patternTCGpackid, source)[0]
-                query.write('INSERT OR REPLACE INTO "tcg" VALUES ("'+line+'","'+tcg_pack_id+'","","","'+TCG_date+'");')
+                if len(TCG_date) > 15 :
+                    fail.write(name+" failed due to an issue with Wiki page")
+                else :
+                    tcg_query.write('INSERT OR REPLACE INTO "pack" VALUES ("'+line+'","'+tcg_pack_id+'","","","'+TCG_date+'");')
             except IndexError :
                 pass
             try: 
@@ -107,10 +132,14 @@ for line in listoflines :
                 regexOCGpackid = re.compile(r"Japanese</caption>.*?\"mw-redirect\">(.*?)</a>", re.DOTALL)
                 patternOCGpackid = re.compile(regexOCGpackid)
                 OCG_pack_id = re.findall(patternOCGpackid, source)[0]
-                query.write('INSERT OR REPLACE INTO "ocg" VALUES ("'+line+'","'+OCG_pack_id+'","","","'+OCG_date+'");')
+                if len(OCG_date) > 15 :
+                    fail.write(name+" failed due to an issue with Wiki page")
+                else :
+                    ocg_query.write('INSERT OR REPLACE INTO "pack" VALUES ("'+line+'","'+OCG_pack_id+'","","","'+OCG_date+'");')
             except IndexError :
                 pass
         else :
             raise
-query.close()
+tcg_query.close()
+ocg_query.close()
 fail.close()
