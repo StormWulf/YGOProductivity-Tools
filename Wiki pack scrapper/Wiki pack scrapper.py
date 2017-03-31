@@ -7,6 +7,7 @@ from urllib.error import HTTPError
 import sys
 import re
 import sqlite3
+from datetime import datetime
 
 sys.argv = ["Wiki pack scrapper.py", "input.txt", "tcg_output.sql", "ocg_output.sql", "failed.txt"]
 input_file = sys.argv[1]
@@ -43,12 +44,30 @@ for line in listoflines :
                 #TCG date
                 regexTCG = re.compile(r"North American English</caption>.*?\d\">(.*?) </td", re.DOTALL)
                 patternTCG = re.compile(regexTCG)
-                TCG_date = re.findall(patternTCG, source)[0]
+                TCG_date_na = re.findall(patternTCG, source)[0]
+                regexTCG = re.compile(r"English</caption>.*?\d\">(.*?) </td", re.DOTALL)
+                patternTCG = re.compile(regexTCG)
+                TCG_date_w = re.findall(patternTCG, source)[0]
+                try:
+                    datetime_TCG_na = datetime.strptime(TCG_date_na, '%Y-%m-%d')
+                except ValueError:
+                    datetime_TCG_na = datetime.strptime('3000-12-12', '%Y-%m-%d')
+                try:
+                    datetime_TCG_w = datetime.strptime(TCG_date_w, '%Y-%m-%d')
+                except ValueError:
+                    datetime_TCG_w = datetime.strptime('3000-12-12', '%Y-%m-%d')
                 regexTCGpackid = re.compile(r"North American English</caption>.*?\"mw-redirect\">(.*?)</a>", re.DOTALL)
                 patternTCGpackid = re.compile(regexTCGpackid)
-                tcg_pack_id = re.findall(patternTCGpackid, source)[0]
-                if len(tcg_pack_id) > 10 :
-                    tcg_pack_id = ''
+                tcg_pack_id_na = re.findall(patternTCGpackid, source)[0]
+                regexTCGpackid = re.compile(r"English</caption>.*?\"mw-redirect\">(.*?)</a>", re.DOTALL)
+                patternTCGpackid = re.compile(regexTCGpackid)
+                tcg_pack_id_w = re.findall(patternTCGpackid, source)[0]
+                if datetime_TCG_na > datetime_TCG_w :
+                    TCG_date = TCG_date_w
+                    tcg_pack_id = tcg_pack_id_w
+                else :
+                    TCG_date = TCG_date_na
+                    tcg_pack_na = tcg_pack_id_na
                 if len(TCG_date) > 15 :
                     fail.write(name+" failed due to an issue with Wiki page")
                 else :
@@ -76,11 +95,31 @@ for line in listoflines :
                         #TCG date
                         regexTCG = re.compile(r"North American English</caption>.*?\d\">(.*?) </td", re.DOTALL)
                         patternTCG = re.compile(regexTCG)
-                        TCG_date = re.findall(patternTCG, source)[0]                        
+                        TCG_date_na = re.findall(patternTCG, source)[0]
+                        regexTCG = re.compile(r"English</caption>.*?\d\">(.*?) </td", re.DOTALL)
+                        patternTCG = re.compile(regexTCG)
+                        TCG_date_w = re.findall(patternTCG, source)[0]
+                        try:
+                            datetime_TCG_na = datetime.strptime(TCG_date_na, '%Y-%m-%d')
+                        except ValueError:
+                            datetime_TCG_na = datetime.strptime('3000-12-12', '%Y-%m-%d')
+                        try:
+                            datetime_TCG_w = datetime.strptime(TCG_date_w, '%Y-%m-%d')
+                        except ValueError:
+                            datetime_TCG_w = datetime.strptime('3000-12-12', '%Y-%m-%d')
                         regexTCGpackid = re.compile(r"North American English</caption>.*?\"mw-redirect\">(.*?)</a>", re.DOTALL)
                         patternTCGpackid = re.compile(regexTCGpackid)
-                        tcg_pack_id = re.findall(patternTCGpackid, source)[0]
-                        if len(tcg_pack_id) > 10 :
+                        tcg_pack_id_na = re.findall(patternTCGpackid, source)[0]
+                        regexTCGpackid = re.compile(r"English</caption>.*?\"mw-redirect\">(.*?)</a>", re.DOTALL)
+                        patternTCGpackid = re.compile(regexTCGpackid)
+                        tcg_pack_id_w = re.findall(patternTCGpackid, source)[0]
+                        if datetime_TCG_na > datetime_TCG_w :
+                            TCG_date = TCG_date_w
+                            tcg_pack_id = tcg_pack_id_w
+                        else :
+                            TCG_date = TCG_date_na
+                            tcg_pack_na = tcg_pack_id_na
+                        if '-' not in tcg_pack_id :
                             tcg_pack_id = ''
                         if len(TCG_date) > 15 :
                             fail.write(name+" failed due to an issue with Wiki page")
@@ -118,6 +157,8 @@ for line in listoflines :
                 regexTCGpackid = re.compile(r"English</caption>.*?\"mw-redirect\">(.*?)</a>", re.DOTALL)
                 patternTCGpackid = re.compile(regexTCGpackid)
                 tcg_pack_id = re.findall(patternTCGpackid, source)[0]
+                if '-' not in TCG_date :
+                    TCG_date = ''
                 if len(TCG_date) > 15 :
                     fail.write(name+" failed due to an issue with Wiki page")
                 else :
