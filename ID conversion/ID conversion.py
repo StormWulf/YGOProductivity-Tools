@@ -8,9 +8,10 @@ import sys
 import re
 import sqlite3
 
-sys.argv = ["ID conversion.py", "input.txt", "output.sql"]
+sys.argv = ["ID conversion.py", "input.txt", "output.sql", "pack_output.sql"]
 input_file = sys.argv[1]
 output_file = sys.argv[2]
+output_pack = sys.argv[3]
 
 #Edit this path if used by a different machine
 conn = sqlite3.connect( "C:\\Users\\auron\\OneDrive\\Documents\\GitHub\\YGOPro-Salvation-Server\\http\\ygopro\\databases\\0-en-OCGTCG.cdb" )
@@ -18,6 +19,7 @@ curs = conn.cursor()
 
 database = open(input_file, "r")
 query = open(output_file, "w", encoding='utf-8')
+query2 = open(output_pack, "w", encoding='utf-8')
 listoflines = database.readlines()
 database.close()
 listofdata = []
@@ -44,6 +46,7 @@ for line in listoflines :
                 print(line+': '+change_id+',')
                 query.write('update datas set id='+change_id+' where id='+line+';\n')
                 query.write('update texts set id='+change_id+' where id='+line+';\n')
+                query2.write('update pack set id='+change_id+' where id='+line+';\n')
             except IndexError :
                 wiki_url = "http://yugioh.wikia.com/wiki/" + quote(name) + "_(card)"
                 page = urr.urlopen(wiki_url)
@@ -59,6 +62,7 @@ for line in listoflines :
                         print(line+': '+change_id)
                         query.write('update datas set id='+change_id+' where id='+line+';\n')
                         query.write('update texts set id='+change_id+' where id='+line+';\n')
+                        query2.write('update pack set id='+change_id+' where id='+line+';\n')
                     except IndexError :
                         print(name+" failed due to IndexError")
                         pass
@@ -77,3 +81,4 @@ for line in listoflines :
         else :
             raise                    
 query.close()
+query2.close()

@@ -67,7 +67,7 @@ for line in listoflines :
                     tcg_pack_id = tcg_pack_id_w
                 else :
                     TCG_date = TCG_date_na
-                    tcg_pack_na = tcg_pack_id_na
+                    tcg_pack_id = tcg_pack_id_na
                 if len(TCG_date) > 15 :
                     fail.write(name+" failed due to an issue with Wiki page")
                 else :
@@ -118,7 +118,7 @@ for line in listoflines :
                             tcg_pack_id = tcg_pack_id_w
                         else :
                             TCG_date = TCG_date_na
-                            tcg_pack_na = tcg_pack_id_na
+                            tcg_pack_id = tcg_pack_id_na
                         if '-' not in tcg_pack_id :
                             tcg_pack_id = ''
                         if len(TCG_date) > 15 :
@@ -132,7 +132,7 @@ for line in listoflines :
                         regexOCGpackid = re.compile(r"Japanese</caption>.*?\"mw-redirect\">(.*?)</a>", re.DOTALL)
                         patternOCGpackid = re.compile(regexOCGpackid)
                         OCG_pack_id = re.findall(patternOCGpackid, source)[0]
-                        if len(OCG_pack_id) > 10 :
+                        if '-' not in OCG_pack_id :
                             OCG_pack_id = ''
                         if len(OCG_date) > 15 :
                             fail.write(name+" failed due to an issue with Wiki page")

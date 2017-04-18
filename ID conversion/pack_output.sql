@@ -1,0 +1,12 @@
+update pack set id=37256334 where id=100200128;
+update pack set id=73240432 where id=100200129;
+update pack set id=00645087 where id=100200130;
+update pack set id=21686473 where id=100218001;
+update pack set id=36211150 where id=100317001;
+update pack set id=62706865 where id=100317002;
+update pack set id=61583217 where id=100317021;
+update pack set id=01861629 where id=100317041;
+update pack set id=34472920 where id=100317042;
+update pack set id=98978921 where id=100317043;
+update pack set id=35595518 where id=100317100;
+update pack set id=09190563 where id=100317101;
