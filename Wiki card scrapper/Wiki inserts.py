@@ -47,6 +47,7 @@ CARD_TYPES = {'Normal Spell Card': 2,
               'Counter Trap Card': 1048580,
               'Level': 17,
               'Effect Monster': 33,
+              'Flip monster,Effect Monster': 2097185,
               'Link Monster': 33554465
               }
 RACE = {'Warrior': 1,
@@ -95,9 +96,19 @@ for line in listoflines :
 		sourcepage = page.read()
 		source = sourcepage.decode("utf-8")
 		## CARD ID
-		regexOCGpackid = re.compile(r"Japanese</caption>.*?\"mw-redirect\">(.*?)</a>", re.DOTALL)
-		patternOCGpackid = re.compile(regexOCGpackid)
-		OCG_pack_id = re.findall(patternOCGpackid, source)[0]
+		try :
+			regexOCGpackid = re.compile(r"Japanese</caption>.*?\"mw-redirect\">(.*?)</a>", re.DOTALL)
+			patternOCGpackid = re.compile(regexOCGpackid)
+			OCG_pack_id = re.findall(patternOCGpackid, source)[0]
+		except IndexError :
+			try :
+				regexOCGpackid = re.compile(r"English</caption>.*?\"mw-redirect\">(.*?)</a>", re.DOTALL)
+				patternOCGpackid = re.compile(regexOCGpackid)
+				OCG_pack_id = re.findall(patternOCGpackid, source)[0]
+			except IndexError :
+				regexOCGpackid = re.compile(r"English</caption>.*?\)\">(.*?)</a>", re.DOTALL)
+				patternOCGpackid = re.compile(regexOCGpackid)
+				OCG_pack_id = re.findall(patternOCGpackid, source)[0]
 		OCG_pack = OCG_pack_id[0:4]
 		try :
 			OCG_pack = prescript[OCG_pack]
@@ -234,9 +245,14 @@ for line in listoflines :
 			link_marker = re.sub('&#160;', ' ', link_marker)
 			card_text = link_marker + card_text
 		# PACK INFO
-		regexOCG = re.compile(r"Japanese name</th>.*?\d\">(.*?) </td", re.DOTALL)
-		patternOCG = re.compile(regexOCG)
-		OCG_date = re.findall(patternOCG, source)[0]
+		try :
+			regexOCG = re.compile(r"Japanese name</th>.*?\d\">(.*?) </td", re.DOTALL)
+			patternOCG = re.compile(regexOCG)
+			OCG_date = re.findall(patternOCG, source)[0]
+		except IndexError :
+			regexOCG = re.compile(r"English</caption>.*?\d\">(.*?) </td", re.DOTALL)
+			patternOCG = re.compile(regexOCG)
+			OCG_date = re.findall(patternOCG, source)[0]
 		query.write('INSERT OR REPLACE INTO "datas" VALUES ("'+card_id+'","'+ot+'","'+alias+'","'+setcode+'","'+card_type+'","'+ATK+'","'+DEF+'","'+level+'","'+race+'","'+attribute+'","0");\n')
 		query.write('INSERT OR REPLACE INTO "texts" VALUES ("'+card_id+'","'+card_name+'","'+card_text+'","","","","","","","","","","","","","","","","");\n')
 		pack_query.write('INSERT OR REPLACE INTO "pack" VALUES ("'+card_id+'","'+OCG_pack_id+'","","","'+OCG_date+'");\n')
