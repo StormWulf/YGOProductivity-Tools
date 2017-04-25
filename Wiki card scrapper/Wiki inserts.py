@@ -37,17 +37,18 @@ SETCODES = {'Amazoness': 4,
             'HERO': 8,
             }
 CARD_TYPES = {'Normal Spell Card': 2,
+              'Normal Trap Card': 4,
+              'Level': 17,
+              'Effect Monster': 33,
               'Ritual Spell Card': 130,
               'Quick-Play Spell Card': 65538,
               'Continuous Spell Card': 131074,
               'Equip Spell Card': 262146,
               'Field Spell Card': 524290,
-              'Normal Trap Card': 4,
               'Continuous Trap Card': 131076,
               'Counter Trap Card': 1048580,
-              'Level': 17,
-              'Effect Monster': 33,
               'Flip monster,Effect Monster': 2097185,
+              'Xyz Monster': 8388641,
               'Link Monster': 33554465
               }
 RACE = {'Warrior': 1,
@@ -184,6 +185,10 @@ for line in listoflines :
 		## LEVEL
 		try:
 			regexLevel = re.compile(r"Level \d{1,2} Monster Cards\">(.*?)</a>")
+			patternLevel = re.compile(regexLevel)
+			level = re.findall(patternLevel, source)[0]
+		except IndexError:
+			regexLevel = re.compile(r"Rank \d{1,2} Monster Cards\">(.*?)</a>")
 			patternLevel = re.compile(regexLevel)
 			level = re.findall(patternLevel, source)[0]
 		except IndexError:
