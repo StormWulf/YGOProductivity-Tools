@@ -49,6 +49,7 @@ CARD_TYPES = {'Normal Spell Card': 2,
               'Counter Trap Card': 1048580,
               'Flip monster,Effect Monster': 2097185,
               'Xyz Monster': 8388641,
+              'Pendulum Monster': 16777249,
               'Link Monster': 33554465
               }
 RACE = {'Warrior': 1,
@@ -193,6 +194,27 @@ for line in listoflines :
 			level = re.findall(patternLevel, source)[0]
 		except IndexError:
 			level = '0'
+		try:
+			regexScale = re.compile(r"Pendulum Scale \d{1,2} Monster Cards\">(.*?)</a>")
+			patternScale = re.compile(regexScale)
+			pscale = re.findall(patternScale, source)[0]
+			if pscale == '10' :
+				pscale = 'A'
+			if pscale == '11' :
+				pscale = 'B'
+			if pscale == '12' :
+				pscale = 'C'
+			if pscale == '13' :
+				pscale = 'D'
+			if level == '10' :
+				level = 'A'
+			if level == '11' :
+				level = 'B'
+			if level == '12' :
+				level = 'C'
+			level = '0x' + pscale + '0' + pscale + '000' + level
+		except IndexError:
+			pass
 		## RACE
 		try :
 			regexRace = re.compile(r"Type\">.*?/wiki/(.*?)\"", re.DOTALL)
