@@ -35,6 +35,11 @@ prescript = {'VJMP': 100200,
              }
 SETCODES = {'Amazoness': 4,
             'HERO': 8,
+			'Magician': 152,
+			'Performapal': 159,
+			'Ritual Beast': 181,
+			'Zefra': 196,
+			'Ritual Beast Tamer': 4277
             }
 CARD_TYPES = {'Normal Spell Card': 2,
               'Normal Trap Card': 4,
@@ -50,6 +55,7 @@ CARD_TYPES = {'Normal Spell Card': 2,
               'Flip monster,Effect Monster': 2097185,
               'Xyz Monster': 8388641,
               'Pendulum Monster': 16777249,
+			  'Pendulum Monster,Effect Monster': 16777249,
               'Link Monster': 33554465
               }
 RACE = {'Warrior': 1,
@@ -98,34 +104,40 @@ for line in listoflines :
 		sourcepage = page.read()
 		source = sourcepage.decode("utf-8")
 		## CARD ID
-		try :
-			regexOCGpackid = re.compile(r"Japanese</caption>.*?\"mw-redirect\">(.*?)</a>", re.DOTALL)
-			patternOCGpackid = re.compile(regexOCGpackid)
-			OCG_pack_id = re.findall(patternOCGpackid, source)[0]
-		except IndexError :
+		try:
+			regexID = re.compile(r"(\d\d\d\d\d\d\d\d)<\/a><\/td><\/tr>")
+			patternID = re.compile(regexID)
+			card_id = re.findall(patternID, source)[0]
+		except IndexError:
 			try :
-				regexOCGpackid = re.compile(r"English</caption>.*?\"mw-redirect\">(.*?)</a>", re.DOTALL)
+				regexOCGpackid = re.compile(r"Japanese</caption>.*?\"mw-redirect\">(.*?)</a>", re.DOTALL)
 				patternOCGpackid = re.compile(regexOCGpackid)
 				OCG_pack_id = re.findall(patternOCGpackid, source)[0]
 			except IndexError :
-				regexOCGpackid = re.compile(r"English</caption>.*?\)\">(.*?)</a>", re.DOTALL)
-				patternOCGpackid = re.compile(regexOCGpackid)
-				OCG_pack_id = re.findall(patternOCGpackid, source)[0]
-		OCG_pack = OCG_pack_id[0:4]
-		try :
-			OCG_pack = prescript[OCG_pack]
-			OCG_ext = OCG_pack_id[8:10]
-			if int(OCG_ext) < 100 :
-				OCG_ext = '0' + str(OCG_ext)
-			card_id = str(OCG_pack) + str(OCG_ext)
-		except KeyError :
-			card_id = 'MISSING'
+				try :
+					regexOCGpackid = re.compile(r"English</caption>.*?\"mw-redirect\">(.*?)</a>", re.DOTALL)
+					patternOCGpackid = re.compile(regexOCGpackid)
+					OCG_pack_id = re.findall(patternOCGpackid, source)[0]
+				except IndexError :
+					regexOCGpackid = re.compile(r"English</caption>.*?\)\">(.*?)</a>", re.DOTALL)
+					patternOCGpackid = re.compile(regexOCGpackid)
+					OCG_pack_id = re.findall(patternOCGpackid, source)[0]
+			OCG_pack = OCG_pack_id[0:4]
+			try :
+				OCG_pack = prescript[OCG_pack]
+				OCG_ext = OCG_pack_id[8:10]
+				if int(OCG_ext) < 100 :
+					OCG_ext = '0' + str(OCG_ext)
+				card_id = str(OCG_pack) + str(OCG_ext)
+			except KeyError :
+				card_id = 'MISSING'
 		## OT (not important anymore)
 		ot = '3'
 		## ALIAS (has to be updated manually if apply)
 		alias = '0'
 		## SETCODE (parsed output has to be fixed)
 		try:
+			setcode_math = []
 			regexSetcode = re.compile(r"Archetypes</a> and <a href=\"/wiki/Series\" title=\"Series\">series</a> \n</dt><dd> (.*?)</dl>", re.DOTALL)
 			patternSetcode = re.compile(regexSetcode)
 			setcode = re.findall(patternSetcode, source)[0]
@@ -139,19 +151,26 @@ for line in listoflines :
 			setcode = re.sub('&amp;', '&', setcode)
 			setcode = re.sub('&#160;', ' ', setcode)
 			setcode = re.sub("\n", "', '", setcode)
-			setcode = "['" + setcode + "]"
-			setcode = re.sub(" ',", "',", setcode)
-			setcode = re.sub(" ' ", " '", setcode)
-			setcode = re.sub(" ']", "]", setcode)
-##			for i in range(0, len(setcode)) :
-##				try :
-##					setcode_math = []
-##					setcode_math.append(SETCODES[setcode[i]])
-##				except KeyError:
-##					pass
-##			str(setcode_math)
+			setcode = re.sub(" '", "", setcode)
+			setcode = re.sub(" ' ", "", setcode)
+			setcode = re.sub("'", "", setcode)
+			setcode = re.sub(", ", ",", setcode)
+			setcode = setcode.split(',')
+			for i in range(0, len(setcode)) :
+				try:
+					setcode_math.append(SETCODES[setcode[i]])
+				except KeyError:
+					pass
+			setcode = ''
+			for j in range(0, len(setcode_math)) :
+				bit = hex(int(setcode_math[j]))
+				if len(bit) < 5 :
+					bit = re.sub('0x', '00', bit)
+				else :
+					bit = re.sub('0x', '', bit)
+				setcode = setcode + bit
+			setcode = str(int(setcode, 16))
 		except IndexError:
-			#setcode_math = '0'
 			setcode = '0'
 		## TYPE
 		regexCardType0 = re.compile(r"Card type,(.*?),")
@@ -178,20 +197,27 @@ for line in listoflines :
 			ATK = '0'
 		## DEF
 		try:
-			regexDEF = re.compile(r"DEF Monster Cards\">(.*?)</a>")
-			patternDEF = re.compile(regexDEF)
-			DEF = re.findall(patternDEF, source)[0]
+			try:
+				regexDEF = re.compile(r"DEF Monster Cards\">(.*?)</a>")
+				patternDEF = re.compile(regexDEF)
+				DEF = re.findall(patternDEF, source)[0]
+			except IndexError:
+				regexLink = re.compile(r">Link Markers.*?</td>", re.DOTALL)
+				patternLink = re.compile(regexLink)
+				link_marker = re.findall(patternLink, source)[0]
+				DEF = '?'
 		except IndexError:
 			DEF = '0'
 		## LEVEL
 		try:
-			regexLevel = re.compile(r"Level \d{1,2} Monster Cards\">(.*?)</a>")
-			patternLevel = re.compile(regexLevel)
-			level = re.findall(patternLevel, source)[0]
-		except IndexError:
-			regexLevel = re.compile(r"Rank \d{1,2} Monster Cards\">(.*?)</a>")
-			patternLevel = re.compile(regexLevel)
-			level = re.findall(patternLevel, source)[0]
+			try:
+				regexLevel = re.compile(r"Level \d{1,2} Monster Cards\">(.*?)</a>")
+				patternLevel = re.compile(regexLevel)
+				level = re.findall(patternLevel, source)[0]
+			except IndexError:
+				regexLevel = re.compile(r"Rank \d{1,2} Monster Cards\">(.*?)</a>")
+				patternLevel = re.compile(regexLevel)
+				level = re.findall(patternLevel, source)[0]
 		except IndexError:
 			level = '0'
 		try:
@@ -213,6 +239,7 @@ for line in listoflines :
 			if level == '12' :
 				level = 'C'
 			level = '0x' + pscale + '0' + pscale + '000' + level
+			level = str(int(level, 16))
 		except IndexError:
 			pass
 		## RACE
@@ -256,7 +283,7 @@ for line in listoflines :
 		card_text = re.sub('&#160;', ' ', card_text)
 		card_text = re.sub('\n Pendulum Effect\n\n ', 'Pendulum Effect\n', card_text)
 		card_text = re.sub('\n\n\n Monster Effect\n\n ', 'Monster Effect\n', card_text)
-		if "Link \d" in card_text :
+		try :
 			regexLink = re.compile(r">Link Markers.*?</td>", re.DOTALL)
 			patternLink = re.compile(regexLink)
 			link_marker = re.findall(patternLink, source)[0]
@@ -270,7 +297,9 @@ for line in listoflines :
 			link_marker = re.sub('>Link Markers\n', 'Link Markers: ', link_marker)
 			link_marker = re.sub('&amp;', '&', link_marker)
 			link_marker = re.sub('&#160;', ' ', link_marker)
-			card_text = link_marker + card_text
+			card_text = link_marker + '\n\n' + card_text
+		except IndexError :
+			pass
 		# PACK INFO
 		try :
 			regexOCG = re.compile(r"Japanese name</th>.*?\d\">(.*?) </td", re.DOTALL)
