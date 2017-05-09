@@ -35,11 +35,22 @@ prescript = {'VJMP': 100200,
              }
 SETCODES = {'Amazoness': 4,
             'HERO': 8,
-			'Magician': 152,
-			'Performapal': 159,
-			'Ritual Beast': 181,
-			'Zefra': 196,
-			'Ritual Beast Tamer': 4277
+            'roid': 16,
+            'Timelord': 74,
+	    'Cyber': 93,
+	    'Magician': 152,
+	    'Performapal': 159,
+	    'D/D': 175,
+	    'Ritual Beast': 181,
+	    'Zefra': 196,
+	    'D/D/D': 4271,
+	    'Ritual Beast Tamer': 4277,
+            'Stargrail': 253,
+            'Starrelic': 254,
+            'Clear Wing': 255,
+            'Vehicroid': 4118,
+            'Synchro Dragon': 8215,
+            'Supreme King Dragon': 8440
             }
 CARD_TYPES = {'Normal Spell Card': 2,
               'Normal Trap Card': 4,
@@ -53,9 +64,12 @@ CARD_TYPES = {'Normal Spell Card': 2,
               'Continuous Trap Card': 131076,
               'Counter Trap Card': 1048580,
               'Flip monster,Effect Monster': 2097185,
+	      'Fusion Monster': 97,
+              'Fusion Monster,Effect Monster': 97,
+              'Synchro Monster': 8225,
               'Xyz Monster': 8388641,
               'Pendulum Monster': 16777249,
-			  'Pendulum Monster,Effect Monster': 16777249,
+	      'Pendulum Monster,Effect Monster': 16777249,
               'Link Monster': 33554465
               }
 RACE = {'Warrior': 1,
@@ -104,6 +118,9 @@ for line in listoflines :
 		sourcepage = page.read()
 		source = sourcepage.decode("utf-8")
 		## CARD ID
+##		regexOCGpackid = re.compile(r"Japanese</caption>.*?\"mw-redirect\">(.*?)</a>", re.DOTALL)
+##		patternOCGpackid = re.compile(regexOCGpackid)
+##		OCG_pack_id = re.findall(patternOCGpackid, source)[0]
 		try:
 			regexID = re.compile(r"(\d\d\d\d\d\d\d\d)<\/a><\/td><\/tr>")
 			patternID = re.compile(regexID)
