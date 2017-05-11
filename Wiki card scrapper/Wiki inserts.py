@@ -186,7 +186,10 @@ for line in listoflines :
 				else :
 					bit = re.sub('0x', '', bit)
 				setcode = setcode + bit
-			setcode = str(int(setcode, 16))
+			try:
+				setcode = str(int(setcode, 16))
+			except ValueError:
+				setcode = '0'
 		except IndexError:
 			setcode = '0'
 		## TYPE
@@ -317,6 +320,7 @@ for line in listoflines :
 			card_text = link_marker + '\n\n' + card_text
 		except IndexError :
 			pass
+		OCG_pack = OCG_pack_id.split('-')[0]
 		# PACK INFO
 		try :
 			regexOCG = re.compile(r"Japanese name</th>.*?\d\">(.*?) </td", re.DOTALL)
@@ -328,6 +332,6 @@ for line in listoflines :
 			OCG_date = re.findall(patternOCG, source)[0]
 		query.write('INSERT OR REPLACE INTO "datas" VALUES ("'+card_id+'","'+ot+'","'+alias+'","'+setcode+'","'+card_type+'","'+ATK+'","'+DEF+'","'+level+'","'+race+'","'+attribute+'","0");\n')
 		query.write('INSERT OR REPLACE INTO "texts" VALUES ("'+card_id+'","'+card_name+'","'+card_text+'","","","","","","","","","","","","","","","","");\n')
-		pack_query.write('INSERT OR REPLACE INTO "pack" VALUES ("'+card_id+'","'+OCG_pack_id+'","","","'+OCG_date+'");\n')
+		pack_query.write('INSERT OR REPLACE INTO "pack" VALUES ("'+card_id+'","'+OCG_pack_id+'","'+OCG_pack+'","'+line+'","'+OCG_date+'");\n')
 query.close()
 pack_query.close()
