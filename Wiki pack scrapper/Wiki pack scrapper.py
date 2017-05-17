@@ -27,160 +27,94 @@ database.close()
 listofdata = []
 
 for line in listoflines :
-    name = curs.execute("SELECT name FROM texts WHERE ID=?", (line ,))
-    name = name.fetchone()
-    name = str(name)
-    name = name[2:-3]
-    name = name.replace(' ','_').replace('#','').replace('-','-')
-    #print(name)
-    wiki_url = "http://yugioh.wikia.com/wiki/" + quote(name)
-    try:
-        print('Processing: '+name)
-        page = urr.urlopen(wiki_url)
-        if page.getcode() == 200 :
-            sourcepage = page.read()
-            source = sourcepage.decode("utf-8")
-            try:
-                #TCG date
-                regexTCG = re.compile(r"North American English</caption>.*?\d\">(.*?) </td", re.DOTALL)
-                patternTCG = re.compile(regexTCG)
-                TCG_date_na = re.findall(patternTCG, source)[0]
-                regexTCG = re.compile(r"English</caption>.*?\d\">(.*?) </td", re.DOTALL)
-                patternTCG = re.compile(regexTCG)
-                TCG_date_w = re.findall(patternTCG, source)[0]
-                try:
-                    datetime_TCG_na = datetime.strptime(TCG_date_na, '%Y-%m-%d')
-                except ValueError:
-                    datetime_TCG_na = datetime.strptime('3000-12-12', '%Y-%m-%d')
-                try:
-                    datetime_TCG_w = datetime.strptime(TCG_date_w, '%Y-%m-%d')
-                except ValueError:
-                    datetime_TCG_w = datetime.strptime('3000-12-12', '%Y-%m-%d')
-                regexTCGpackid = re.compile(r"North American English</caption>.*?\"mw-redirect\">(.*?)</a>", re.DOTALL)
-                patternTCGpackid = re.compile(regexTCGpackid)
-                tcg_pack_id_na = re.findall(patternTCGpackid, source)[0]
-                regexTCGpackid = re.compile(r"English</caption>.*?\"mw-redirect\">(.*?)</a>", re.DOTALL)
-                patternTCGpackid = re.compile(regexTCGpackid)
-                tcg_pack_id_w = re.findall(patternTCGpackid, source)[0]
-                if datetime_TCG_na > datetime_TCG_w :
-                    TCG_date = TCG_date_w
-                    tcg_pack_id = tcg_pack_id_w
-                else :
-                    TCG_date = TCG_date_na
-                    tcg_pack_id = tcg_pack_id_na
-                if len(TCG_date) > 15 :
-                    fail.write(name+" failed due to an issue with Wiki page")
-                else :
-                    tcg_query.write('INSERT OR REPLACE INTO "pack" VALUES ("'+line+'","'+tcg_pack_id+'","","","'+TCG_date+'");')
-                #OCG date
-                regexOCG = re.compile(r"Japanese name</th>.*?\d\">(.*?) </td", re.DOTALL)
-                patternOCG = re.compile(regexOCG)
-                OCG_date = re.findall(patternOCG, source)[0]
-                regexOCGpackid = re.compile(r"Japanese</caption>.*?\"mw-redirect\">(.*?)</a>", re.DOTALL)
-                patternOCGpackid = re.compile(regexOCGpackid)
-                OCG_pack_id = re.findall(patternOCGpackid, source)[0]
-                if len(OCG_pack_id) > 10 :
-                    OCG_pack_id = ''
-                if len(OCG_date) > 15 :
-                    fail.write(name+" failed due to an issue with Wiki page")
-                else :
-                    ocg_query.write('INSERT OR REPLACE INTO "pack" VALUES ("'+line+'","'+OCG_pack_id+'","","","'+OCG_date+'");')
-            except IndexError :
-                wiki_url = "http://yugioh.wikia.com/wiki/" + quote(name) + "_(card)"
-                page = urr.urlopen(wiki_url)
-                if page.getcode() == 200 :
-                    sourcepage = page.read()
-                    source = sourcepage.decode("utf-8")
-                    try :
-                        #TCG date
-                        regexTCG = re.compile(r"North American English</caption>.*?\d\">(.*?) </td", re.DOTALL)
-                        patternTCG = re.compile(regexTCG)
-                        TCG_date_na = re.findall(patternTCG, source)[0]
-                        regexTCG = re.compile(r"English</caption>.*?\d\">(.*?) </td", re.DOTALL)
-                        patternTCG = re.compile(regexTCG)
-                        TCG_date_w = re.findall(patternTCG, source)[0]
-                        try:
-                            datetime_TCG_na = datetime.strptime(TCG_date_na, '%Y-%m-%d')
-                        except ValueError:
-                            datetime_TCG_na = datetime.strptime('3000-12-12', '%Y-%m-%d')
-                        try:
-                            datetime_TCG_w = datetime.strptime(TCG_date_w, '%Y-%m-%d')
-                        except ValueError:
-                            datetime_TCG_w = datetime.strptime('3000-12-12', '%Y-%m-%d')
-                        regexTCGpackid = re.compile(r"North American English</caption>.*?\"mw-redirect\">(.*?)</a>", re.DOTALL)
-                        patternTCGpackid = re.compile(regexTCGpackid)
-                        tcg_pack_id_na = re.findall(patternTCGpackid, source)[0]
-                        regexTCGpackid = re.compile(r"English</caption>.*?\"mw-redirect\">(.*?)</a>", re.DOTALL)
-                        patternTCGpackid = re.compile(regexTCGpackid)
-                        tcg_pack_id_w = re.findall(patternTCGpackid, source)[0]
-                        if datetime_TCG_na > datetime_TCG_w :
-                            TCG_date = TCG_date_w
-                            tcg_pack_id = tcg_pack_id_w
-                        else :
-                            TCG_date = TCG_date_na
-                            tcg_pack_id = tcg_pack_id_na
-                        if '-' not in tcg_pack_id :
-                            tcg_pack_id = ''
-                        if len(TCG_date) > 15 :
-                            fail.write(name+" failed due to an issue with Wiki page")
-                        else :
-                            tcg_query.write('INSERT OR REPLACE INTO "pack" VALUES ("'+line+'","'+tcg_pack_id+'","","","'+TCG_date+'");')
-                        #OCG date
-                        regexOCG = re.compile(r"Japanese name</th>.*?\d\">(.*?) </td", re.DOTALL)
-                        patternOCG = re.compile(regexOCG)
-                        OCG_date = re.findall(patternOCG, source)[0]
-                        regexOCGpackid = re.compile(r"Japanese</caption>.*?\"mw-redirect\">(.*?)</a>", re.DOTALL)
-                        patternOCGpackid = re.compile(regexOCGpackid)
-                        OCG_pack_id = re.findall(patternOCGpackid, source)[0]
-                        if '-' not in OCG_pack_id :
-                            OCG_pack_id = ''
-                        if len(OCG_date) > 15 :
-                            fail.write(name+" failed due to an issue with Wiki page")
-                        else :
-                            ocg_query.write('INSERT OR REPLACE INTO "pack" VALUES ("'+line+'","'+OCG_pack_id+'","","","'+OCG_date+'");')
-                    except IndexError :
-                        print(name+" failed due to IndexError")
-                        fail.write(name+" failed due to IndexError\n")
-                        pass
-                    continue
-    except urllib.error.HTTPError as err :
-        if err.code == 404 :
-           # try:
-               # wiki_url = "http://yugioh.wikia.com/wiki/" + line
-               # page = urr.urlopen(wiki_url)
-##            print(name+" failed due to HTTPError")
-##            fail.write(name+" failed due to HTTPError\n")
-            try:
-                regexTCG = re.compile(r"English</caption>.*?\d\">(.*?) </td", re.DOTALL)
-                patternTCG = re.compile(regexTCG)
-                TCG_date = re.findall(patternTCG, source)[0]
-                regexTCGpackid = re.compile(r"English</caption>.*?\"mw-redirect\">(.*?)</a>", re.DOTALL)
-                patternTCGpackid = re.compile(regexTCGpackid)
-                tcg_pack_id = re.findall(patternTCGpackid, source)[0]
-                if '-' not in TCG_date :
-                    TCG_date = ''
-                if len(TCG_date) > 15 :
-                    fail.write(name+" failed due to an issue with Wiki page")
-                else :
-                    tcg_query.write('INSERT OR REPLACE INTO "pack" VALUES ("'+line+'","'+tcg_pack_id+'","","","'+TCG_date+'");')
-            except IndexError :
-                pass
-            try: 
-                #OCG date
-                regexOCG = re.compile(r"Japanese name</th>.*?\d\">(.*?) </td", re.DOTALL)
-                patternOCG = re.compile(regexOCG)
-                OCG_date = re.findall(patternOCG, source)[0]
-                regexOCGpackid = re.compile(r"Japanese</caption>.*?\"mw-redirect\">(.*?)</a>", re.DOTALL)
-                patternOCGpackid = re.compile(regexOCGpackid)
-                OCG_pack_id = re.findall(patternOCGpackid, source)[0]
-                if len(OCG_date) > 15 :
-                    fail.write(name+" failed due to an issue with Wiki page")
-                else :
-                    ocg_query.write('INSERT OR REPLACE INTO "pack" VALUES ("'+line+'","'+OCG_pack_id+'","","","'+OCG_date+'");')
-            except IndexError :
-                pass
-        else :
-            raise
+	name = curs.execute("SELECT name FROM texts WHERE ID=?", (line ,))
+	name = name.fetchone()
+	name = str(name)
+	name = name[2:-3]
+	lname = name.replace(' ','_').replace('#','').replace('-','-')
+	#print(name)
+	wiki_url = "http://yugioh.wikia.com/wiki/" + quote(lname)
+	try:
+##		try:
+		page = urr.urlopen(wiki_url)
+		if page.getcode() == 200 :
+			sourcepage = page.read()
+			source = sourcepage.decode("utf-8")
+			regexCardType = re.compile(r"Card type,(.*?),")
+			patternCardType = re.compile(regexCardType)
+			#CardType = re.findall(patternCardType, source)[0]
+			print('Processing: '+wiki_url)
+##		except IndexError:
+##			wiki_url = "http://yugioh.wikia.com/wiki/" + quote(lname) + "_(card)"
+##			page = urr.urlopen(wiki_url)
+##			if page.getcode() == 200 :
+##				sourcepage = page.read()
+##				source = sourcepage.decode("utf-8")
+##				print('Processing: '+wiki_url)
+		#TCG date
+		try:
+			try:
+				regexTCG = re.compile(r"North American English</caption>.*?\d\">(.*?) </td", re.DOTALL)
+				patternTCG = re.compile(regexTCG)
+				TCG_date_na = re.findall(patternTCG, source)[0]
+				try:
+					datetime_TCG_na = datetime.strptime(TCG_date_na, '%Y-%m-%d')
+				except ValueError:
+					datetime_TCG_na = datetime.strptime('3000-12-12', '%Y-%m-%d')
+				regexTCGpackid = re.compile(r"North American English</caption>.*?\"mw-redirect\">(.*?)</a>", re.DOTALL)
+				patternTCGpackid = re.compile(regexTCGpackid)
+				tcg_pack_id_na = re.findall(patternTCGpackid, source)[0]
+			except IndexError:
+				datetime_TCG_na = datetime.strptime('3000-12-12', '%Y-%m-%d')
+				TCG_date_na = ''
+				tcg_pack_id_na = ''
+			regexTCG = re.compile(r"English</caption>.*?\d\">(.*?) </td", re.DOTALL)
+			patternTCG = re.compile(regexTCG)
+			TCG_date_w = re.findall(patternTCG, source)[0]
+			try:
+				datetime_TCG_w = datetime.strptime(TCG_date_w, '%Y-%m-%d')
+			except ValueError:
+				datetime_TCG_w = datetime.strptime('3000-12-12', '%Y-%m-%d')
+			regexTCGpackid = re.compile(r"English</caption>.*?\"mw-redirect\">(.*?)</a>", re.DOTALL)
+			patternTCGpackid = re.compile(regexTCGpackid)
+			tcg_pack_id_w = re.findall(patternTCGpackid, source)[0]
+			if datetime_TCG_na > datetime_TCG_w :
+				TCG_date = TCG_date_w
+				tcg_pack_id = tcg_pack_id_w
+			else :
+				TCG_date = TCG_date_na
+				tcg_pack_id = tcg_pack_id_na
+			tcg_pack_name = tcg_pack_id.split('-')[0]
+			if len(TCG_date) > 15 or len(TCG_date)<1 :
+				fail.write(name+" failed due to an issue with Wiki page")
+			else :
+				tcg_query.write('INSERT OR REPLACE INTO "pack" VALUES ("'+line+'","'+tcg_pack_id+'","'+tcg_pack_name+'","'+name+'","'+TCG_date+'");\n')
+		except IndexError:
+			pass
+		#OCG date
+		try:
+			regexOCG = re.compile(r"Japanese name</th>.*?\d\">(.*?) </td", re.DOTALL)
+			patternOCG = re.compile(regexOCG)
+			OCG_date = re.findall(patternOCG, source)[0]
+			regexOCGpackid = re.compile(r"Japanese</caption>.*?\"mw-redirect\">(.*?)</a>", re.DOTALL)
+			patternOCGpackid = re.compile(regexOCGpackid)
+			OCG_pack_id = re.findall(patternOCGpackid, source)[0]
+			if len(OCG_pack_id) > 10 :
+				OCG_pack_id = ''
+			ocg_pack_name = OCG_pack_id.split('-')[0]
+			if len(OCG_date) > 15 :
+				fail.write(name+" failed due to an issue with Wiki page\n")
+			else :
+				ocg_query.write('INSERT OR REPLACE INTO "pack" VALUES ("'+line+'","'+OCG_pack_id+'","'+ocg_pack_name+'","'+name+'","'+OCG_date+'");\n')
+		except IndexError:
+			pass
+	except urllib.error.HTTPError as err :
+		if err.code == 404 :
+			print(wiki_url+" failed due to HTTPError")
+			fail.write(name+" failed due to HTTPError\n")
+			continue
+		else :
+			raise
 tcg_query.close()
 ocg_query.close()
 fail.close()
