@@ -32,6 +32,7 @@ for line in listoflines :
 	name = str(name)
 	name = name[2:-3]
 	lname = name.replace(' ','_').replace('#','').replace('-','-')
+	line = line.rstrip()
 	#print(name)
 	wiki_url = "http://yugioh.wikia.com/wiki/" + quote(lname)
 	try:
@@ -75,9 +76,14 @@ for line in listoflines :
 				datetime_TCG_w = datetime.strptime(TCG_date_w, '%Y-%m-%d')
 			except ValueError:
 				datetime_TCG_w = datetime.strptime('3000-12-12', '%Y-%m-%d')
-			regexTCGpackid = re.compile(r"English</caption>.*?\"mw-redirect\">(.*?)</a>", re.DOTALL)
-			patternTCGpackid = re.compile(regexTCGpackid)
-			tcg_pack_id_w = re.findall(patternTCGpackid, source)[0]
+			try:
+				regexTCGpackid = re.compile(r"English</caption>.*?\"mw-redirect\">(.*?)</a>", re.DOTALL)
+				patternTCGpackid = re.compile(regexTCGpackid)
+				tcg_pack_id_w = re.findall(patternTCGpackid, source)[0]
+			except IndexError:
+				regexTCGpackid = re.compile(r"English</caption>.*?\)\">(.*?)</a>", re.DOTALL)
+				patternTCG = re.compile(regexTCGpackid)
+				TCG_date_w = re.findall(patternTCG, source)[0]
 			if datetime_TCG_na > datetime_TCG_w :
 				TCG_date = TCG_date_w
 				tcg_pack_id = tcg_pack_id_w
