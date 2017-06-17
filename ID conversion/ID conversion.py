@@ -64,20 +64,13 @@ for line in listoflines :
                         query.write('update texts set id='+change_id+' where id='+line+';\n')
                         query2.write('update pack set id='+change_id+' where id='+line+';\n')
                     except IndexError :
-                        print(name+" failed due to IndexError")
+                        print(wiki_url+" failed due to IndexError")
                         pass
                     continue
     except urllib.error.HTTPError as err :
         if err.code == 404 :
-           # try:
-               # wiki_url = "http://yugioh.wikia.com/wiki/" + line
-               # page = urr.urlopen(wiki_url)
-            print(name+" failed due to HTTPError")
-            #fail.write(name+" failed due to HTTPError\n")
+            print(wiki_url+" failed due to HTTPError")
             continue
-            #except urllib.error.HTTPError as err :
-                #pass
-            #continue
         else :
             raise                    
 query.close()
