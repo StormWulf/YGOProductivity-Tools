@@ -83,6 +83,7 @@ CARD_TYPES = {
 		  'Effect Monster': 33,
 		  'Ritual Spell Card': 130,
 		  'Union monster': 1057,
+          'Gemini monster': 2081,
 		  'Tuner monster': 4129,
 		  'Quick-Play Spell Card': 65538,
 		  'Continuous Spell Card': 131074,
@@ -263,7 +264,7 @@ for line in listoflines:
                     patternDEF = re.compile(regexDEF)
                     DEF = re.findall(patternDEF, source)[0]
                 except IndexError:
-                    regexLink = re.compile(r">Link Markers.*?</td>", re.DOTALL)
+                    regexLink = re.compile(r">Link Arrows.*?</td>", re.DOTALL)
                     patternLink = re.compile(regexLink)
                     link_marker = re.findall(patternLink, source)[0]
                     DEF = '-'
@@ -350,7 +351,7 @@ for line in listoflines:
             card_text = re.sub('\n Pendulum Effect\n\n ', 'Pendulum Effect\n', card_text)
             card_text = re.sub('\n\n\n Monster Effect\n\n ', 'Monster Effect\n', card_text)
             try:
-                regexLink = re.compile(r">Link Markers.*?</td>", re.DOTALL)
+                regexLink = re.compile(r">Link Arrows.*?</td>", re.DOTALL)
                 patternLink = re.compile(regexLink)
                 link_marker = re.findall(patternLink, source)[0]
                 link_marker = re.sub('(?!<dd>|</dd>|<dl>|</dl>|<br>|<br />)(<.*?>)','', link_marker)
@@ -360,7 +361,15 @@ for line in listoflines:
                 link_marker = re.sub('<dl>', '\n', link_marker)
                 link_marker = re.sub('</dl>', '\n', link_marker)
                 link_marker = re.sub('<br />', '\n', link_marker)
-                link_marker = re.sub('>Link Markers\n', 'Link Markers: ', link_marker)
+                link_marker = re.sub('>Link Arrows\n', 'Link Arrows: ', link_marker)
+                link_marker = re.sub('Top-Left', '[🡴]', link_marker)
+                link_marker = re.sub('Top-Right', '[🡵]', link_marker)
+                link_marker = re.sub('Bottom-Left', '[🡷]', link_marker)
+                link_marker = re.sub('Bottom-Right', '[🡶]', link_marker)
+                link_marker = re.sub('Top', '[🡱]', link_marker)
+                link_marker = re.sub('Bottom', '[🡳]', link_marker)
+                link_marker = re.sub('Left', '[🡰]', link_marker)
+                link_marker = re.sub('Right', '[🡲]', link_marker)
                 link_marker = re.sub('&amp;', '&', link_marker)
                 link_marker = re.sub('&#160;', ' ', link_marker)
                 card_text = link_marker + '\n\n' + card_text
@@ -388,7 +397,7 @@ for line in listoflines:
             line = line.rstrip()
             pack_query.write('INSERT OR REPLACE INTO "pack" VALUES ("'+card_id+'","'+OCG_pack_id+'","'+OCG_pack+'","'+line+'","'+OCG_date+'");\n')
             try:
-                regexPicture = re.compile(r"og:image\" content=\"(.*?)\"", re.DOTALL)
+                regexPicture = re.compile(r"cardtable-cardimage\".*?<a href=\"(.*?)\"", re.DOTALL)
                 patternPicture = re.compile(regexPicture)
                 card_picture = re.findall(patternPicture, source)[0]
                 fullfilename = os.path.join('C:\\Users\\auron\\OneDrive\\Documents\\GitHub\\YGOPro-Salvation-Server\\http\\ygopro\\pics', card_id+".jpg")

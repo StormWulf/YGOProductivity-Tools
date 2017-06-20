@@ -95,7 +95,7 @@ for line in listoflines :
                 card_text = re.sub('&amp;', '&', card_text)
                 card_text = re.sub('&#160;', ' ', card_text)
                 try :
-                    regexLink = re.compile(r">Link Markers.*?</td>", re.DOTALL)
+                    regexLink = re.compile(r">Link Arrows.*?</td>", re.DOTALL)
                     patternLink = re.compile(regexLink)
                     link_marker = re.findall(patternLink, source)[0]
                     link_marker = re.sub('(?!<dd>|</dd>|<dl>|</dl>|<br>|<br />)(<.*?>)','', link_marker)
@@ -105,7 +105,16 @@ for line in listoflines :
                     link_marker = re.sub('<dl>', '\n', link_marker)
                     link_marker = re.sub('</dl>', '\n', link_marker)
                     link_marker = re.sub('<br />', '\n', link_marker)
-                    link_marker = re.sub('>Link Markers\n', 'Link Markers: ', link_marker)
+                    link_marker = re.sub('>Link Arrows\n', 'Link Arrows: ', link_marker)
+                    link_marker = re.sub('Top-Left', '[🡴]', link_marker)
+                    link_marker = re.sub('Top-Right', '[🡵]', link_marker)
+                    link_marker = re.sub('Bottom-Left', '[🡷]', link_marker)
+                    link_marker = re.sub('Bottom-Right', '[🡶]', link_marker)
+                    link_marker = re.sub('Top', '[🡱]', link_marker)
+                    link_marker = re.sub('Bottom', '[🡳]', link_marker)
+                    link_marker = re.sub('Left', '[🡰]', link_marker)
+                    link_marker = re.sub('Right', '[🡲]', link_marker)
+                    link_marker = re.sub(' , ', ' ', link_marker)
                     link_marker = re.sub('&amp;', '&', link_marker)
                     link_marker = re.sub('&#160;', ' ', link_marker)
                     card_text = link_marker + '\n\n' + card_text
