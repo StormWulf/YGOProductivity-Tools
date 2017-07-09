@@ -68,7 +68,7 @@ for line in listoflines:
                 card_text = re.sub('\n\n\n Monster Effect\n\n ', 'Monster Effect\n', card_text)
                 card_json["desc"] = card_text
                 try:
-                    regexLink = re.compile(r">Link Arrows(.*?)</td>", re.DOTALL)
+                    regexLink = re.compile(r"Link Arrows(.*?)<tr", re.DOTALL)
                     patternLink = re.compile(regexLink)
                     links = re.findall(patternLink, source)[0]
                     links = re.sub('(?!<dd>|</dd>|<dl>|</dl>|<br>|<br />)(<.*?>)','', links)
@@ -83,25 +83,26 @@ for line in listoflines:
                     link_marker = re.sub('Left', '[🡰]', link_marker)
                     link_marker = re.sub('Right', '[🡲]', link_marker)
                     link_marker = re.sub(r'\s$', '', link_marker)
-                    card_json["desc"] = 'Link Arrows: ' + link_marker + '\n\n' + card_text
-                    links = []
-                    if '[🡴]' in link_marker:
-                        links.append(0)
-                    if '[🡱]' in link_marker:
-                        links.append(1)
-                    if '[🡵]' in link_marker:
-                        links.append(2)
-                    if '[🡰]' in link_marker:
-                        links.append(3)
-                    if '[🡲]' in link_marker:
-                        links.append(4)
-                    if '[🡷]' in link_marker:
-                        links.append(5)
-                    if '[🡳]' in link_marker:
-                        links.append(6)
-                    if '[🡶]' in link_marker:
-                        links.append(7)
-                    card_json["links"] = links
+                    if '[' in link_marker:
+                        card_json["desc"] = 'Link Arrows: ' + link_marker + '\n\n' + card_text
+                        links = []
+                        if '[🡴]' in link_marker:
+                            links.append(0)
+                        if '[🡱]' in link_marker:
+                            links.append(1)
+                        if '[🡵]' in link_marker:
+                            links.append(2)
+                        if '[🡰]' in link_marker:
+                            links.append(3)
+                        if '[🡲]' in link_marker:
+                            links.append(4)
+                        if '[🡷]' in link_marker:
+                            links.append(5)
+                        if '[🡳]' in link_marker:
+                            links.append(6)
+                        if '[🡶]' in link_marker:
+                            links.append(7)
+                        card_json["links"] = links
                 except IndexError:
                     pass
             except IndexError:
