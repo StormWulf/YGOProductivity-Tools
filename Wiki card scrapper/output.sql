@@ -1,6 +1,2 @@
-INSERT OR REPLACE INTO "datas" VALUES ("101002060","3","0","514","131074","0","0","0","0","0","0");
-INSERT OR REPLACE INTO "texts" VALUES ("101002060","Asymmetaphys","Once per turn: You can banish 1 ""Metaphys"" card from your hand, except ""Metaphysical Regeneration"", and if you do, draw 1 card. Once per turn, if a ""Metaphys"" card(s) in your possession is banished, except ""Metaphysical Regeneration"": Apply this effect, depending on whose turn it is.
-● Your turn: All monsters on the field lose 500 ATK and DEF, except ""Metaphys"" monsters (even if this card leaves the field).
-● Your opponent's turn: Change the battle positions of all monsters on the field, except ""Metaphys"" monsters.","","","","","","","","","","","","","","","","");
-INSERT OR REPLACE INTO "datas" VALUES ("100419004","3","0","61","33","1700","1200","4","1","32","0");
-INSERT OR REPLACE INTO "texts" VALUES ("100419004","Shadow Six Samurai - Douji","When another ""Six Samurai"" monster(s) is Normal or Special Summoned to your field while this monster is on the field: You can send 1 ""Six Samurai"" card from your Deck to the GY. If exactly 1 ""Six Samurai"" monster you control (and no other cards) would be destroyed by a card effect, you can banish this card from your GY instead.","","","","","","","","","","","","","","","","");
+INSERT OR REPLACE INTO "datas" VALUES ("101002065","3","0","0","131074","0","0","0","0","0","0");
+INSERT OR REPLACE INTO "texts" VALUES ("101002065","Replenishment Squad","If you take 1000 or more damage from an opponent's attack or card effect: Draw 1 card for every 1000 damage you took.","","","","","","","","","","","","","","","","");

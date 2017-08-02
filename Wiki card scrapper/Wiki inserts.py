@@ -58,6 +58,7 @@ SETCODES = {
 		  'Raidraptor': 186,
 		  'Zefra': 196,
 		  'D/D/D': 4271,
+          'Mecha Phantom Beast': 4123,
 		  'Ritual Beast Tamer': 4277,
 		  'Abyss Actor': 4332,
 		  'Stargrail': 253,
@@ -82,6 +83,7 @@ CARD_TYPES = {
 		  'Level': 17,
 		  'Effect Monster': 33,
 		  'Ritual Spell Card': 130,
+          'Spirit monster': 545,
 		  'Union monster': 1057,
           'Gemini monster': 2081,
 		  'Tuner monster': 4129,
@@ -171,7 +173,6 @@ for line in listoflines:
             except IndexError:
                 print(name+" failed because the card page doesn't exist yet")
                 fail.write(name+" failed because the card page doesn't exist yet\n")
-                pass
             OCG_pack = OCG_pack_id[0:4]
             try:
                 OCG_pack = prescript[OCG_pack]

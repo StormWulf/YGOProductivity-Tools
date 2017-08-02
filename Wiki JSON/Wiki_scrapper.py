@@ -3,6 +3,7 @@
 
 import urllib.request as urr
 import urllib.error
+from urllib.parse import quote
 import sys
 import re
 import json
@@ -21,86 +22,42 @@ prescript = {
 		  'VJMP': 100200,
 		  'WJMP': 100203,
 		  'SJMP': 100204,
+          'VF17': 100230,
 		  'YA03': 100218,
-		  'COTD': 101001,
-		  'MACR': 100912,
-		  'CP17': 100217,
-		  'DP18': 100418,
-		  'SD32': 100332,
+          'COTD': 101001,
 		  'CIBR': 101002,
 		  'DBSW': 100419,
-          'VP17': 100209
+          'VP17': 100209,
+          'SR05': 100305,
+          'EP17': 100420
 		  }
-SETCODES = {
-		  'Amazoness': 4,
-		  'HERO': 8,
-		  'Destiny HERO': 49160,
-          'Ojama': 15,
-		  'roid': 16,
-		  'Gladiator Beast': 25,
-		  'Ninja': 43,
-          'Six Samurai': 61,
-		  'Timelord': 74,
-		  'Gadget': 81,
-          'Bamboo Sword': 96,
-		  'Mermail': 116,
-          'Nimble': 120,
-		  'Cyber': 147,
-		  'Cyberdark': 16531,
-		  'Magician': 152,
-		  'Odd-Eyes': 153,
-		  'Superheavy Samurai': 154,
-		  'Performapal': 159,
-		  'D/D': 175,
-		  'Ritual Beast': 181,
-		  'Raidraptor': 186,
-		  'Zefra': 196,
-		  'D/D/D': 4271,
-          'Mecha Phantom Beast': 4123,
-		  'Ritual Beast Tamer': 4277,
-		  'Abyss Actor': 4332,
-		  'Stargrail': 253,
-		  'Starrelic': 254,
-		  'Clear Wing': 255,
-		  'Synchron': 4119,
-		  'Vehicroid': 4118,
-		  'Synchro Dragon': 8215,
-		  'Supreme King Dragon': 8440,
-		  'Gouki': 252,
-		  'Bonding': 512,
-		  'Vullet': 513,
-		  'Metaphys': 514,
-		  'Crawler': 516,
-		  'Altergeist': 517,
-          'Magibullet': 518,
-          'Weathery': 519
-		  }
+SETCODES = {}
+with open('setcodes.txt','r', encoding='utf-8') as inf:
+    SETCODES = eval(inf.read())
+inf.close()
 CARD_TYPES = {
 		  'Normal Spell Card': 2,
 		  'Normal Trap Card': 4,
-		  'Level': 17,
-		  'Effect Monster': 33,
+		  'Normal_Monster': 17,
+		  'Effect_Monster': 33,
 		  'Ritual Spell Card': 130,
-          'Spirit monster': 545,
-		  'Union monster': 1057,
-          'Gemini monster': 2081,
-		  'Tuner monster': 4129,
+          'Ritual_Monster': 129,
+          'Spirit_monster': 545,
+		  'Union_monster': 1025,
+          'Gemini_monster': 2081,
+		  'Tuner_monster': 4129,
 		  'Quick-Play Spell Card': 65538,
 		  'Continuous Spell Card': 131074,
 		  'Equip Spell Card': 262146,
 		  'Field Spell Card': 524290,
 		  'Continuous Trap Card': 131076,
 		  'Counter Trap Card': 1048580,
-		  'Flip monster': 2097185,
-		  'Flip monster,Effect Monster': 2097185,
-		  'Fusion Monster': 97,
-		  'Fusion Monster,Effect Monster': 97,
-		  'Synchro Monster': 8225,
-		  'Xyz Monster': 8388641,
-		  'Pendulum Monster': 16777249,
-		  'Pendulum Monster,Effect Monster': 16777249,
-		  'Link Monster': 33554465,
-          'Link Monster,Effect Monster': 33554465
+		  'Flip_monster': 2097185,
+		  'Fusion_Monster': 65,
+		  'Synchro_Monster': 8193,
+		  'Xyz_Monster': 8388609,
+		  'Pendulum_Monster': 16777217,
+		  'Link_Monster': 33554433,
 		  }
 RACE = {
 		  'Warrior': 1,
@@ -121,7 +78,7 @@ RACE = {
 		  'Beast-Warrior': 32768,
 		  'Dinosaur': 65536,
 		  'Fish': 131072,
-		  'Sea Serpent': 262144,
+		  'Sea_Serpent': 262144,
 		  'Reptile': 524288,
 		  'Psychic': 1048576,
 		  'Divine-Beast': 2097152,
@@ -141,9 +98,9 @@ ATTRIBUTE = {
 print('--Starting Wiki inserts.py--')
 print('This does not generate alias values, assign it manually if a card needs it.\n\n')
 for line in listoflines:
-    name = line.replace(' ','_').replace('#','')
+    name = line.replace(' ','_').replace('#','').replace('–','-')
     name = name.rstrip()
-    wiki_url = "http://yugioh.wikia.com/wiki/" + name
+    wiki_url = "http://yugioh.wikia.com/wiki/" + quote(name)
     print('Processing: '+wiki_url)
     try:
         page = urr.urlopen(wiki_url)
@@ -151,12 +108,13 @@ for line in listoflines:
             sourcepage = page.read()
             source = sourcepage.decode("utf-8")
             card_json = {"ocg":{}, "tcg":{}}
+            # OCG PACK INFO
             try:
                 try:
                     regexOCGpackid = re.compile(r"Japanese</caption>.*?\"mw-redirect\">(.*?)</a>", re.DOTALL)
                     patternOCGpackid = re.compile(regexOCGpackid)
                     OCG_pack_id = re.findall(patternOCGpackid, source)[0]
-                    OCG_pack = OCG_pack_id[0:4]
+                    OCG_pack = OCG_pack_id.split('-')[0]
                     card_json["ocg"]["pack"] = OCG_pack
                     card_json["ocg"]["pack_id"] = OCG_pack_id
                 except IndexError:
@@ -164,16 +122,17 @@ for line in listoflines:
                         regexOCGpackid = re.compile(r"Japanese</caption>.*?\)\">(.*?)</a>", re.DOTALL)
                         patternOCGpackid = re.compile(regexOCGpackid)
                         OCG_pack_id = re.findall(patternOCGpackid, source)[0]
-                        OCG_pack = OCG_pack_id[0:4]
+                        OCG_pack = OCG_pack_id.split('-')[0]
                         card_json["ocg"]["pack"] = OCG_pack
                         card_json["ocg"]["pack_id"] = OCG_pack_id
                     except IndexError:
                         pass
+                # TCG PACK INFO
                 try:
                     regexOCGpackid = re.compile(r"English</caption>.*?\"mw-redirect\">(.*?)</a>", re.DOTALL)
                     patternOCGpackid = re.compile(regexOCGpackid)
                     OCG_pack_id = re.findall(patternOCGpackid, source)[0]
-                    OCG_pack = OCG_pack_id[0:4]
+                    OCG_pack = OCG_pack_id.split('-')[0]
                     card_json["tcg"]["pack"] = OCG_pack
                     card_json["tcg"]["pack_id"] = OCG_pack_id
                 except IndexError:
@@ -181,7 +140,7 @@ for line in listoflines:
                         regexOCGpackid = re.compile(r"English</caption>.*?\)\">(.*?)</a>", re.DOTALL)
                         patternOCGpackid = re.compile(regexOCGpackid)
                         OCG_pack_id = re.findall(patternOCGpackid, source)[0]
-                        OCG_pack = OCG_pack_id[0:4]
+                        OCG_pack = OCG_pack_id.split('-')[0]
                         card_json["tcg"]["pack"] = OCG_pack
                         card_json["tcg"]["pack_id"] = OCG_pack_id
                     except IndexError:
@@ -189,16 +148,21 @@ for line in listoflines:
             except IndexError:
                 print(name+" failed because the card page doesn't exist yet")
                 fail.write(name+" failed because the card page doesn't exist yet\n")
+            # CARD ID
             try:
                 OCG_pack = prescript[OCG_pack]
-                OCG_ext = OCG_pack_id[7:10]
+                OCG_ext = OCG_pack_id.split('-JP')[1]
+                if OCG_ext == 'SP1':
+                    OCG_ext = '000'
                 card_id = str(OCG_pack) + str(OCG_ext)
+                card_id = str(int(card_id))
             except KeyError:
                 card_id = 'MISSING'
             try:
                 regexID = re.compile(r"(\d\d\d\d\d\d\d\d)<\/a><\/td><\/tr>")
                 patternID = re.compile(regexID)
                 card_id = re.findall(patternID, source)[0]
+                card_id = str(int(card_id))
             except IndexError:
                 pass
             try:
@@ -233,7 +197,7 @@ for line in listoflines:
                         pass
                 setcode = ''
                 for j in range(0, len(setcode_math)):
-                    bit = hex(int(setcode_math[j]))
+                    bit = setcode_math[j]
                     if len(bit) < 5:
                         bit = re.sub('0x', '00', bit)
                     else:
@@ -247,24 +211,35 @@ for line in listoflines:
                 setcode = '0'
             card_json["setcode"] = int(setcode)
             ## TYPE
-            regexCardType0 = re.compile(r"Card type,(.*?),")
+            regexCardType0 = re.compile(r"Card type\">Card type</a></th><td class=\"cardtablerowdata\">.*?\">(.*?)</a>", re.DOTALL)
             patternCardType0 = re.compile(regexCardType0)
             card_type0 = re.findall(patternCardType0, source)[0]
-            if card_type0 == 'Monster Card':
-                regexCardType = re.compile(r"Type,.*?,(.*?)\"")
-                patternCardType = re.compile(regexCardType)
-                try: 
-                    card_type = re.findall(patternCardType, source)[0]
-                    card_type = re.sub(',Level', '', card_type)
+            if card_type0 == 'Monster':
+                regexCardType = re.compile(r"<\/a> \/ <a href=\"\/wiki\/(.*?)\"")
+                patternCardType = re.compile(regexCardType)                
+                card_type = re.findall(patternCardType, source)[0]
+                try:
+                    card_type = int(str(CARD_TYPES[card_type]))
+                except KeyError:
+                    card_type = int(str(CARD_TYPES['Normal_Monster']))
+                try:
+                    card_type2 = re.findall(patternCardType, source)[1]
+                    if card_type2 == 'Effect_Monster' and card_type != 4129:
+                        card_type += 32
                 except IndexError:
-                    card_type = 'Link Monster'
-                card_type = str(CARD_TYPES[card_type])
+                    pass
+                try:
+                    regexFlip = re.compile(r"/wiki/Flip_effect")
+                    patternFlip = re.compile(regexFlip)
+                    flip_check = re.findall(patternFlip, source)[0]
+                    card_type += 2097152
+                except IndexError:
+                    pass
             else:
-                regexCardType = re.compile(r"Property,(.*?),")
+                regexCardType = re.compile(r"Property</a></th><td class=\"cardtablerowdata\">.*?title=\"(.*?)\">", re.DOTALL)
                 patternCardType = re.compile(regexCardType)
                 card_type = re.findall(patternCardType, source)[0]
-                card_type = re.sub(',Level', '', card_type)
-                card_type = str(CARD_TYPES[card_type])
+                card_type = str(CARD_TYPES[card_type])               
             card_json["type"] = int(card_type)
             ## ATK
             try:
@@ -273,6 +248,8 @@ for line in listoflines:
                 ATK = re.findall(patternATK, source)[0]
             except IndexError:
                 ATK = 0
+            if ATK == "?":
+                ATK = -2
             card_json["atk"] = int(ATK)
             ## DEF
             try:
@@ -287,12 +264,14 @@ for line in listoflines:
                     DEF = '-'
             except IndexError:
                 DEF = 0
+            if DEF == "?":
+                DEF = -2
             if DEF != '-' : 
                 card_json["def"] = int(DEF)
             else:
                 card_json["def"] = DEF
             ## LEVEL
-            try:
+            if card_type0 == 'Monster':
                 try:
                     try:
                         regexLevel = re.compile(r"Level \d{1,2} Monster Cards\">(.*?)</a>")
@@ -306,8 +285,7 @@ for line in listoflines:
                     regexLevel = re.compile(r"Link \d{1,2} Monster Cards\">(.*?)</a>")
                     patternLevel = re.compile(regexLevel)
                     level = re.findall(patternLevel, source)[0]
-                
-            except IndexError:
+            else:
                 level = 0
             card_json["level"] = int(level)
             try:
@@ -334,14 +312,14 @@ for line in listoflines:
             except IndexError:
                 pass
             ## RACE
-            try:
+            if card_json["level"] > 0:
                 regexRace = re.compile(r"Type\">.*?/wiki/(.*?)\"", re.DOTALL)
                 patternRace = re.compile(regexRace)
                 race = re.findall(patternRace, source)[0]
                 race = str(RACE[race])
-            except IndexError:
-                race = 0
-            card_json["race"] = int(race)
+                card_json["race"] = int(race)
+            else:
+                card_json["race"] = 0
             ## ATTRIBUTE
             try:
                 regexAttribute = re.compile(r"Attribute</a></th><td class=\"cardtablerowdata\">\n<a href=\"/wiki/(.*?)\"", re.DOTALL)
@@ -426,6 +404,7 @@ for line in listoflines:
                     pass
             except IndexError:
                 pass
+            OCG_pack = OCG_pack_id.split('-')[0]
             # ALIAS
             try:
                 regexAlias = re.compile(r"This card's name is always treated as \"(.*?)\"", re.DOTALL)
@@ -433,24 +412,21 @@ for line in listoflines:
                 card_json["alias"] = re.findall(patternAlias, card_json["desc"])[0]
             except IndexError:
                 pass
-            OCG_pack = OCG_pack_id.split('-')[0]
             # PACK INFO
+            regexOCG = re.compile(r"Japanese name</th>.*?\d\">(.*?) </td", re.DOTALL)
+            patternOCG = re.compile(regexOCG)
             try:
-                regexOCG = re.compile(r"Japanese name</th>.*?\d\">(.*?) </td", re.DOTALL)
-                patternOCG = re.compile(regexOCG)
-                try:
-                    OCG_date = re.findall(patternOCG, source)[0]
-                    card_json["ocg"]["date"] = OCG_date
-                except IndexError:
-                    pass
+                OCG_date = re.findall(patternOCG, source)[0]
+                card_json["ocg"]["date"] = OCG_date
             except IndexError:
-                regexOCG = re.compile(r"English</caption>.*?\d\">(.*?) </td", re.DOTALL)
-                patternOCG = re.compile(regexOCG)
-                try:
-                    TCG_date = re.findall(patternOCG, source)[0]
-                    card_json["tcg"]["date"] = TCG_date
-                except IndexError:
-                    pass
+                pass
+            regexOCG = re.compile(r"English</caption>.*?\d\">(.*?) </td", re.DOTALL)
+            patternOCG = re.compile(regexOCG)
+            try:
+                TCG_date = re.findall(patternOCG, source)[0]
+                card_json["tcg"]["date"] = TCG_date
+            except IndexError:
+                pass
             # CARD PICTURE
             try:
                 regexPicture = re.compile(r"cardtable-cardimage\".*?<a href=\"(.*?)cb=", re.DOTALL)

@@ -165,7 +165,7 @@ for line in listoflines:
                 except IndexError:
                     regexTCGpackid = re.compile(r"English</caption>.*?\)\">(.*?)</a>", re.DOTALL)
                     patternTCG = re.compile(regexTCGpackid)
-                    TCG_date_w = re.findall(patternTCG, source)[0]
+                    tcg_pack_id_w = re.findall(patternTCG, source)[0]
                 if datetime_TCG_na > datetime_TCG_w :
                     TCG_date = TCG_date_w
                     tcg_pack_id = tcg_pack_id_w
