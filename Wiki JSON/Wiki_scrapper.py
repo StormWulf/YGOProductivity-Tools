@@ -26,10 +26,13 @@ prescript = {
 		  'YA03': 100218,
           'COTD': 101001,
 		  'CIBR': 101002,
+          'EXFO': 101003,
 		  'DBSW': 100419,
           'VP17': 100209,
           'SR05': 100305,
-          'EP17': 100420
+          'EP17': 100420,
+          '17CC': 100220,
+          '17PR': 100230
 		  }
 SETCODES = {}
 with open('setcodes.txt','r', encoding='utf-8') as inf:
@@ -151,7 +154,10 @@ for line in listoflines:
             # CARD ID
             try:
                 OCG_pack = prescript[OCG_pack]
-                OCG_ext = OCG_pack_id.split('-JP')[1]
+                try:
+                    OCG_ext = OCG_pack_id.split('-JP')[1]
+                except IndexError:
+                    OCG_ext = OCG_pack_id.split('-EN')[1]
                 if OCG_ext == 'SP1':
                     OCG_ext = '000'
                 card_id = str(OCG_pack) + str(OCG_ext)
@@ -381,25 +387,26 @@ for line in listoflines:
                     link_marker = re.sub('Left', '[🡰]', link_marker)
                     link_marker = re.sub('Right', '[🡲]', link_marker)
                     link_marker = re.sub(r'\s$', '', link_marker)
-                    card_json["desc"] = 'Link Arrows: ' + link_marker + '\n\n' + card_text
-                    links = []
-                    if '[🡴]' in link_marker:
-                        links.append(0)
-                    if '[🡱]' in link_marker:
-                        links.append(1)
-                    if '[🡵]' in link_marker:
-                        links.append(2)
-                    if '[🡰]' in link_marker:
-                        links.append(3)
-                    if '[🡲]' in link_marker:
-                        links.append(4)
-                    if '[🡷]' in link_marker:
-                        links.append(5)
-                    if '[🡳]' in link_marker:
-                        links.append(6)
-                    if '[🡶]' in link_marker:
-                        links.append(7)
-                    card_json["links"] = links
+                    if '[' in link_marker:
+                        card_json["desc"] = 'Link Arrows: ' + link_marker + '\n\n' + card_text
+                        links = []
+                        if '[🡴]' in link_marker:
+                            links.append(0)
+                        if '[🡱]' in link_marker:
+                            links.append(1)
+                        if '[🡵]' in link_marker:
+                            links.append(2)
+                        if '[🡰]' in link_marker:
+                            links.append(3)
+                        if '[🡲]' in link_marker:
+                            links.append(4)
+                        if '[🡷]' in link_marker:
+                            links.append(5)
+                        if '[🡳]' in link_marker:
+                            links.append(6)
+                        if '[🡶]' in link_marker:
+                            links.append(7)
+                        card_json["links"] = links
                 except IndexError:
                     pass
             except IndexError:

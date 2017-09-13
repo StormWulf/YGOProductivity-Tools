@@ -19,6 +19,11 @@ listoflines = database.readlines()
 database.close()
 listofdata = []
 
+SETCODES = {}
+with open('setcodes.txt','r', encoding='utf-8') as inf:
+    SETCODES = eval(inf.read())
+inf.close()
+
 print('--Starting Wiki picture inserts.py--')
 for line in listoflines:
     json_filename = 'C:\\Users\\auron\\OneDrive\\Documents\\GitHub\\YGO_DB\\http\\json\\' + str(int(line)) + '.json'
@@ -113,6 +118,8 @@ for line in listoflines:
                 patternOCGpackid = re.compile(regexOCGpackid)
                 OCG_pack_id = re.findall(patternOCGpackid, source)[0]
                 OCG_pack = OCG_pack_id.split('-')[0]
+                if '-' not in OCG_pack:
+                    OCG_pack = ''
                 card_json["ocg"]["pack"] = OCG_pack
                 card_json["ocg"]["pack_id"] = OCG_pack_id
             except IndexError:
@@ -121,6 +128,8 @@ for line in listoflines:
                     patternOCGpackid = re.compile(regexOCGpackid)
                     OCG_pack_id = re.findall(patternOCGpackid, source)[0]
                     OCG_pack = OCG_pack_id.split('-')[0]
+                    if '-' not in OCG_pack:
+                        OCG_pack = ''
                     card_json["ocg"]["pack"] = OCG_pack
                     card_json["ocg"]["pack_id"] = OCG_pack_id
                 except IndexError:
@@ -176,11 +185,54 @@ for line in listoflines:
                 if len(TCG_date) > 15 or len(TCG_date)<1 :
                     fail.write(card_json["name"]+" failed due to an issue with Wiki page")
                 else :
+                    if '-' not in tcg_pack_name:
+                        OCG_pack = ''
                     card_json["tcg"]["date"] = TCG_date
                     card_json["tcg"]["pack"] = tcg_pack_name
                     card_json["tcg"]["pack_id"] = tcg_pack_id
             except IndexError:
                 pass
+            # SETCODE
+            try:
+                setcode_math = []
+                regexSetcode = re.compile(r"Archetypes</a> and <a href=\"/wiki/Series\" title=\"Series\">series</a> \n</dt><dd> (.*?)</dl>", re.DOTALL)
+                patternSetcode = re.compile(regexSetcode)
+                setcode = re.findall(patternSetcode, source)[0]
+                setcode = re.sub('(?!<dd>|</dd>|<dl>|</dl>|<br>|<br />)(<.*?>)','', setcode)
+                setcode = re.sub('"', '""', setcode)
+                setcode = re.sub('<dd>', '', setcode)
+                setcode = re.sub('</dd>', '', setcode)
+                setcode = re.sub('<dl>', '', setcode)
+                setcode = re.sub('</dl>', '', setcode)
+                setcode = re.sub('<br />', '', setcode)
+                setcode = re.sub('&amp;', '&', setcode)
+                setcode = re.sub('&#160;', ' ', setcode)
+                setcode = re.sub("\n", "', '", setcode)
+                setcode = re.sub(" '", "", setcode)
+                setcode = re.sub(" ' ", "", setcode)
+                setcode = re.sub("'", "", setcode)
+                setcode = re.sub(", ", ",", setcode)
+                setcode = setcode.split(',')
+                for i in range(0, len(setcode)):
+                    try:
+                        setcode_math.append(SETCODES[setcode[i]])
+                    except KeyError:
+                        pass
+                setcode = ''
+                for j in range(0, len(setcode_math)):
+                    bit = setcode_math[j]
+                    if len(bit) < 5:
+                        bit = re.sub('0x', '00', bit)
+                    else:
+                        bit = re.sub('0x', '', bit)
+                    setcode = setcode + bit
+                try:
+                    setcode = str(int(setcode, 16))
+                except ValueError:
+                    setcode = '0'
+            except IndexError:
+                setcode = '0'
+            card_json["setcode"] = int(setcode)
             # CARD PICTURE
             try:
                 regexPicture = re.compile(r"cardtable-cardimage\".*?<a href=\"(.*?)cb=", re.DOTALL)
