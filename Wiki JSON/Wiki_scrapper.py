@@ -24,15 +24,17 @@ prescript = {
 		  'SJMP': 100204,
           'VF17': 100230,
 		  'YA03': 100218,
+          'YA04': 100219,
           'COTD': 101001,
 		  'CIBR': 101002,
           'EXFO': 101003,
-		  'DBSW': 100419,
+		  'DP19': 100407,
           'VP17': 100209,
           'SR05': 100305,
           'EP17': 100420,
           '17CC': 100220,
-          '17PR': 100230
+          '17PR': 100230,
+          'LEDD': 100240
 		  }
 SETCODES = {}
 with open('setcodes.txt','r', encoding='utf-8') as inf:
@@ -114,7 +116,7 @@ for line in listoflines:
             # OCG PACK INFO
             try:
                 try:
-                    regexOCGpackid = re.compile(r"Japanese</caption>.*?\"mw-redirect\">(.*?)</a>", re.DOTALL)
+                    regexOCGpackid = re.compile(r"Japanese</caption>.*?\"mw-redirect\">(.*?)</a> </td>", re.DOTALL)
                     patternOCGpackid = re.compile(regexOCGpackid)
                     OCG_pack_id = re.findall(patternOCGpackid, source)[0]
                     OCG_pack = OCG_pack_id.split('-')[0]
@@ -132,7 +134,7 @@ for line in listoflines:
                         pass
                 # TCG PACK INFO
                 try:
-                    regexOCGpackid = re.compile(r"English</caption>.*?\"mw-redirect\">(.*?)</a>", re.DOTALL)
+                    regexOCGpackid = re.compile(r"English</caption>.*?\"mw-redirect\">(.*?)</a> </td>", re.DOTALL)
                     patternOCGpackid = re.compile(regexOCGpackid)
                     OCG_pack_id = re.findall(patternOCGpackid, source)[0]
                     OCG_pack = OCG_pack_id.split('-')[0]
@@ -154,16 +156,24 @@ for line in listoflines:
             # CARD ID
             try:
                 OCG_pack = prescript[OCG_pack]
-                try:
-                    OCG_ext = OCG_pack_id.split('-JP')[1]
-                except IndexError:
-                    OCG_ext = OCG_pack_id.split('-EN')[1]
-                if OCG_ext == 'SP1':
-                    OCG_ext = '000'
-                card_id = str(OCG_pack) + str(OCG_ext)
-                card_id = str(int(card_id))
             except KeyError:
-                card_id = 'MISSING'
+                #OCG_pack = input("Couldn't parse pack number, input it here: ")
+                print("Failed to parse pack number for: "+name)
+            # print(OCG_pack_id)
+            try:
+                OCG_ext = OCG_pack_id.split('-JP')[1]
+            except IndexError:
+                OCG_ext = OCG_pack_id.split('-EN')[1]
+            if OCG_ext == 'SP1':
+                OCG_ext = '000'
+            if OCG_ext == 'A00':
+                OCG_ext = '001'
+            if OCG_ext == 'B00':
+                OCG_ext = '002'
+            if OCG_ext == 'C00':
+                OCG_ext = '003'
+            card_id = str(OCG_pack) + str(OCG_ext)
+            card_id = str(int(card_id))
             try:
                 regexID = re.compile(r"(\d\d\d\d\d\d\d\d)<\/a><\/td><\/tr>")
                 patternID = re.compile(regexID)
@@ -238,7 +248,7 @@ for line in listoflines:
                     regexFlip = re.compile(r"/wiki/Flip_effect")
                     patternFlip = re.compile(regexFlip)
                     flip_check = re.findall(patternFlip, source)[0]
-                    card_type += 2097152
+                    card_type = 2097185
                 except IndexError:
                     pass
             else:

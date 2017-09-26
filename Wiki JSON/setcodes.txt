@@ -325,6 +325,9 @@
  "F.A.": "0x107",
  "Magibullet": "0x108",
  "Weathery": "0x109",
- "Parshath": "0x208",
- "Mythical Beast": "0x209"
+ "Parshath": "0x10a",
+ "Mythical Beast": "0x209",
+ "Eyes Restrict": "0x20a",
+ "Tindangle": "0x20b",
+ "Jack Knight": "0x20c",
 }

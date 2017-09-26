@@ -113,23 +113,25 @@ for line in listoflines:
             except IndexError:
                 pass
             # OCG PACK NAME
+            OCG_pack = ''
+            OCG_pack_id = ''
             try:
-                regexOCGpackid = re.compile(r"Japanese</caption>.*?\"mw-redirect\">(.*?)</a>", re.DOTALL)
+                regexOCGpackid = re.compile(r"Japanese</caption>.*?\"mw-redirect\">(.*?)</a> </td>", re.DOTALL)
                 patternOCGpackid = re.compile(regexOCGpackid)
                 OCG_pack_id = re.findall(patternOCGpackid, source)[0]
+                if '-' not in OCG_pack_id or len(OCG_pack_id)>11:
+                    OCG_pack_id = ''
                 OCG_pack = OCG_pack_id.split('-')[0]
-                if '-' not in OCG_pack:
-                    OCG_pack = ''
                 card_json["ocg"]["pack"] = OCG_pack
                 card_json["ocg"]["pack_id"] = OCG_pack_id
             except IndexError:
                 try:
-                    regexOCGpackid = re.compile(r"Japanese</caption>.*?\)\">(.*?)</a>", re.DOTALL)
+                    regexOCGpackid = re.compile(r"Japanese</caption>.*?\)\">(.*?)</a> </td>", re.DOTALL)
                     patternOCGpackid = re.compile(regexOCGpackid)
                     OCG_pack_id = re.findall(patternOCGpackid, source)[0]
+                    if '-' not in OCG_pack_id or len(OCG_pack_id)>11:
+                        OCG_pack_id = ''
                     OCG_pack = OCG_pack_id.split('-')[0]
-                    if '-' not in OCG_pack:
-                        OCG_pack = ''
                     card_json["ocg"]["pack"] = OCG_pack
                     card_json["ocg"]["pack_id"] = OCG_pack_id
                 except IndexError:
@@ -153,7 +155,7 @@ for line in listoflines:
                         datetime_TCG_na = datetime.strptime(TCG_date_na, '%Y-%m-%d')
                     except ValueError:
                         datetime_TCG_na = datetime.strptime('3000-12-12', '%Y-%m-%d')
-                    regexTCGpackid = re.compile(r"North American English</caption>.*?\"mw-redirect\">(.*?)</a>", re.DOTALL)
+                    regexTCGpackid = re.compile(r"North American English</caption>.*?\"mw-redirect\">(.*?)</a> </td>", re.DOTALL)
                     patternTCGpackid = re.compile(regexTCGpackid)
                     tcg_pack_id_na = re.findall(patternTCGpackid, source)[0]
                 except IndexError:
@@ -168,7 +170,7 @@ for line in listoflines:
                 except ValueError:
                     datetime_TCG_w = datetime.strptime('3000-12-12', '%Y-%m-%d')
                 try:
-                    regexTCGpackid = re.compile(r"English</caption>.*?\"mw-redirect\">(.*?)</a>", re.DOTALL)
+                    regexTCGpackid = re.compile(r"English</caption>.*?\"mw-redirect\">(.*?)</a> </td>", re.DOTALL)
                     patternTCGpackid = re.compile(regexTCGpackid)
                     tcg_pack_id_w = re.findall(patternTCGpackid, source)[0]
                 except IndexError:
