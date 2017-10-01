@@ -6,20 +6,42 @@ var scraperjs = require('scraperjs'),
     MONSTER_TYPE = require('./monster_type.json'),
     ST_TYPE = require('./st_type.json');
 scraperjs.StaticScraper.create()
-    .request({ url:'http://yugioh.wikia.com/wiki/Stardust_Dragon', encoding: "utf8"})
+    .request({ url:'http://yugioh.wikia.com/wiki/Odd-Eyes_Pendulum_Dragon', encoding: "utf8"})
     .scrape(function($) {
+        // Setcode operation
         setcode = []; 
         $('dt').filter(function() {
             return $(this).text().match(/Archetypes and series(.*)/);
         }).nextUntil('dt').each(function(){
                 setcode.push($(this).text().trim());
             });
+        setcode_math = [];
+        for (var i = 0; i < setcode.length; i++) {
+            setcode_math.push(SETCODES[setcode[i]]);
+        }
+        setcode_math = setcode_math.filter(function(n){ 
+            return n != undefined; 
+        });
+        setcode = '';
+        for (var j = 0; j < setcode_math.length; j++) {
+            bit = setcode_math[j];
+            if (bit.length < 5) {
+                bit = bit.replace('0x', '00');
+            }
+            else {
+                bit = bit.replace('0x', '');
+            }
+            setcode += bit;
+        }
+        setcode = parseInt(setcode.toString(16),16);
+        // Scrape most of the other card information
         card = {};
         $(".cardtablerowheader").each(function() {
             return $(this).each( function(index) {
                 card[$(this).text()] = $(this).next().text(); 
             });
         });
+        // Initiate json
         card_json = {"ocg":{}, "tcg":{}};
 /*         card_json.ocg.pack = 
         card_json.ocg.pack_id = 
