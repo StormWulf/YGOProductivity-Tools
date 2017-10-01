@@ -4,9 +4,10 @@ var scraperjs = require('scraperjs'),
     ATTRIBUTES = require('./attributes.json'),
     RACE = require('./race.json'),
     MONSTER_TYPE = require('./monster_type.json'),
-    ST_TYPE = require('./st_type.json');
+    ST_TYPE = require('./st_type.json'),
+    markers;
 scraperjs.StaticScraper.create()
-    .request({ url:'http://yugioh.wikia.com/wiki/Odd-Eyes_Pendulum_Dragon', encoding: "utf8"})
+    .request({ url:'http://yugioh.wikia.com/wiki/Decode_Talker', encoding: "utf8"})
     .scrape(function($) {
         // Setcode operation
         setcode = []; 
@@ -53,8 +54,6 @@ scraperjs.StaticScraper.create()
         card_json.setcode = setcode;
         if(card['Card type'] == '\nMonster ') {
             card_json.type = MONSTER_TYPE[(card.Types.split(' / ')[1] + ' / ' + card.Types.split(' / ')[2] + ' / ' + card.Types.split(' / ')[3]).replace('/ undefined','').replace('  / undefined','').trim()];
-            card_json.atk = parseInt(card['ATK / DEF'].split(' / ')[0]);
-            card_json.def = parseInt(card['ATK / DEF'].split(' / ')[1]);
             if (card.Types.split(' / ')[1] == 'Xyz') {
                 card_json.level = parseInt(card.Rank);
             }
@@ -67,7 +66,42 @@ scraperjs.StaticScraper.create()
                 }
             }
             else {
-                card_json.level = parseInt(card.Level);
+                if(card.Types.split(' / ')[1] != 'Link') {
+                    card_json.atk = parseInt(card['ATK / DEF'].split(' / ')[0]);
+                    card_json.def = parseInt(card['ATK / DEF'].split(' / ')[1]);
+                }
+                else{
+                    card_json.atk = parseInt(card['ATK / LINK'].split(' / ')[0]);   
+                    card_json.def = '-';
+                    card_json.level = parseInt(card['ATK / LINK'].split(' / ')[1]);
+                    markers = card['Link Arrows'].replace('Top-Left', '[🡴]').replace('Top-Right', '[🡵]').replace('Bottom-Left', '[🡷]').replace('Bottom-Right', '[🡶]').replace('Top', '[🡱]').replace('Bottom', '[🡳]').replace('Left', '[🡰]').replace('Right', '[🡲]').replace(' , ', '').replace(' , ', '').trim();
+                    links = [];
+                    if(markers.includes('[🡴]')){
+                        links.push(0);
+                    }
+                    if(markers.includes('[🡱]')){
+                        links.push(1);
+                    }
+                    if(markers.includes('[🡵]')){
+                        links.push(2);
+                    }
+                    if(markers.includes('[🡰]')){
+                        links.push(3);
+                    }
+                    if(markers.includes('[🡲]')){
+                        links.push(4);
+                    }
+                    if(markers.includes('[🡷]')){
+                        links.push(5);
+                    }
+                    if(markers.includes('[🡳]')){
+                        links.push(6);
+                    }
+                    if(markers.includes('[🡶]')){
+                        links.push(7);
+                    }
+                    card_json.links = links;
+                }
             }
             card_json.race = RACE[card.Types.split(' / ')[0].trim()];
             card_json.attribute = ATTRIBUTES[card.Attribute.trim()];
@@ -82,6 +116,9 @@ scraperjs.StaticScraper.create()
         }
         card_json.name = card.English.trim().replace('Check translation','');
         card_json.desc = $(".navbox-list").eq(0).html().replace('<br>','\n').replace(/<.*?>/g,'').replace(/&apos;/g, "'").replace(/&quot;/g, '"').replace(/&gt;/g, '>').replace(/&lt;/g, '<').replace(/&amp;/g, '&').replace(/&#x2019;/g, "'").replace(/&#x25CF;/g, "●").replace(/\n /g, "\n").trim();
+        if(markers !== undefined) {
+            card_json.desc = 'Link Arrows: ' + markers + '\n\n' + card_json.desc;
+        }
         card_json.picture = $(".cardtable-cardimage").eq(0).html().match(/<a href=\"(.*?)\"/)[1];
         //console.log(card);
         console.log(card_json);
