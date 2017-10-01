@@ -1,0 +1,11 @@
+{
+ "Spell / Normal": 2,
+ "Trap / Normal": 4,
+ "Spell / Ritual": 130,
+ "Spell / Quick-Play": 65538,
+ "Spell / Continuous": 131074,
+ "Trap / Continuous": 131076,
+ "Spell / Equip": 262146,
+ "Spell / Field": 524290,
+ "Trap / Counter": 1048580	
+}

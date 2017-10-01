@@ -1,0 +1,9 @@
+{ 
+ "EARTH": 1,
+ "WATER": 2,
+ "FIRE": 4,
+ "WIND": 8,
+ "LIGHT": 16,
+ "DARK": 32,
+ "DIVINE": 64
+}
