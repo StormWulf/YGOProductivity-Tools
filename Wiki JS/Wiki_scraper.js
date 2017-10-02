@@ -76,14 +76,29 @@ lineReader.on('line', function (line) {
                 }
                 else {
                     if(card.Types.split(' / ')[1] != 'Link') {
-                        card_json.atk = parseInt(card['ATK / DEF'].split(' / ')[0]);
-                        card_json.def = parseInt(card['ATK / DEF'].split(' / ')[1]);
+                        if(card['ATK / DEF'].split(' / ')[0].trim() == '?'){
+                            card_json.atk = -2;
+                        }
+                        else{
+                            card_json.atk = parseInt(card['ATK / DEF'].split(' / ')[0]);
+                        }
+                        if(card['ATK / DEF'].split(' / ')[1].trim() == '?'){
+                            card_json.def = -2;
+                        }
+                        else{
+                            card_json.def = parseInt(card['ATK / DEF'].split(' / ')[1]);
+                        }
                     }
                     else{
-                        card_json.atk = parseInt(card['ATK / LINK'].split(' / ')[0]);   
+                        if(card['ATK / LINK'].split(' / ')[0].trim() == '?'){
+                            card_json.atk = -2;
+                        }
+                        else{
+                            card_json.atk = parseInt(card['ATK / LINK'].split(' / ')[0]); 
+                        }                       
                         card_json.def = '-';
                         card_json.level = parseInt(card['ATK / LINK'].split(' / ')[1]);
-                        markers = card['Link Arrows'].replace('Top-Left', '[🡴]').replace('Top-Right', '[🡵]').replace('Bottom-Left', '[🡷]').replace('Bottom-Right', '[🡶]').replace('Top', '[🡱]').replace('Bottom', '[🡳]').replace('Left', '[🡰]').replace('Right', '[🡲]').replace(' , ', '').replace(' , ', '').trim();
+                        markers = card['Link Arrows'].replace('Top-Left', '[🡴]').replace('Top-Right', '[🡵]').replace('Bottom-Left', '[🡷]').replace('Bottom-Right', '[🡶]').replace('Top', '[🡱]').replace('Bottom', '[🡳]').replace('Left', '[🡰]').replace('Right', '[🡲]').replace(/\s,\s/g, '').trim();
                         links = [];
                         if(markers.includes('[🡴]')){
                             links.push(0);
