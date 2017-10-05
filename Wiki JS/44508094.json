@@ -1,0 +1,22 @@
+{
+  "ocg": {
+    "pack": "Collectible Tins 2008 Wave 1",
+    "pack_id": "CT05-EN001",
+    "date": "2008-08-18"
+  },
+  "tcg": {
+    "pack": "Collectible Tins 2008 Wave 1",
+    "pack_id": "CT05-EN001",
+    "date": "2008-08-18"
+  },
+  "id": 44508094,
+  "setcode": 163,
+  "type": 8225,
+  "atk": 2500,
+  "def": 2000,
+  "race": 8192,
+  "attribute": 8,
+  "name": "Stardust Dragon",
+  "desc": "1 Tuner + 1 or more non-Tuner monsters\nDuring either player's turn, when a card or effect is activated that would destroy a card(s) on the field: You can Tribute this card; negate the activation, and if you do, destroy it. During the End Phase, if this effect was activated this turn (and was not negated): You can Special Summon this card from your Graveyard.",
+  "picture": "https://vignette.wikia.nocookie.net/yugioh/images/b/bf/StardustDragon-LC5D-EN-UR-1E.png/revision/latest?cb=20141027121328"
+}

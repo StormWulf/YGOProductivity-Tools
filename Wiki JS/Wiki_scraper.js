@@ -53,12 +53,27 @@ lineReader.on('line', function (line) {
             });
             // Initiate json
             card_json = {"ocg":{}, "tcg":{}};
-    /*         card_json.ocg.pack = 
-            card_json.ocg.pack_id = 
-            card_json.ocg.date =
-            card_json.tcg.pack =
-            card_json.tcg.pack_id = 
-            card_json.tcg.date = */
+
+            //TCG Pack Info
+            tcg_list = $('.navbox-list caption').next().next().text().trim().split('\n\n\n').filter(function(n){ 
+                return n.includes('-EN'); 
+            }).sort(function(primary, secondary){
+                return (new Date(primary.date) - new Date(secondary.date));
+            })[0].trim().split('\n');
+            card_json.tcg.pack = tcg_list[2].trim();
+            card_json.tcg.pack_id = tcg_list[1].trim();
+            card_json.tcg.date = tcg_list[0].trim();
+
+            //OCG Pack Info
+            ocg_list = $('.navbox-list caption').next().next().text().trim().split('\n\n\n').filter(function(n){ 
+                return n.includes('-JP'); 
+            }).sort(function(primary, secondary){
+                return (new Date(primary.date) - new Date(secondary.date));
+            })[0].trim().split('\n');
+            card_json.ocg.pack = ocg_list[2].trim();
+            card_json.ocg.pack_id = ocg_list[1].trim();
+            card_json.ocg.date = ocg_list[0].trim();
+
             card_json.id = parseInt(card.Passcode);
             card_json.setcode = setcode;
             if(card['Card type'] == '\nMonster ') {
