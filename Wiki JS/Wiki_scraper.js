@@ -5,6 +5,7 @@ var scraperjs = require('scraperjs'),
     RACE = require('./race.json'),
     MONSTER_TYPE = require('./monster_type.json'),
     ST_TYPE = require('./st_type.json'),
+    PRERELEASE = require('./prerelease.json'),
     markers,
     lineReader = require('readline').createInterface({
         input: require('fs').createReadStream('./input.txt')
@@ -13,7 +14,7 @@ lineReader.on('line', function (line) {
     line = line.replace('_',' ').trim();
     console.log('Reading: '+line);
     scraperjs.StaticScraper.create()
-        .request({ url:'http://yugioh.wikia.com/wiki/'+line, encoding: "utf8"})
+        .request({ url:'http://yugioh.wikia.com/wiki/'+line })
         .scrape(function($) {
             // Setcode operation
             setcode = []; 
@@ -55,26 +56,40 @@ lineReader.on('line', function (line) {
             card_json = {"ocg":{}, "tcg":{}};
 
             //TCG Pack Info
-            tcg_list = $('.navbox-list caption').next().next().text().trim().split('\n\n\n').filter(function(n){ 
+            tcg_list = $('.navbox-list caption').next().next().text().trim().split('\n \n');
+            tcg_list = tcg_list.filter(function(n){ 
                 return n.includes('-EN'); 
-            }).sort(function(primary, secondary){
-                return (new Date(primary.date) - new Date(secondary.date));
-            })[0].trim().split('\n');
-            card_json.tcg.pack = tcg_list[2].trim();
-            card_json.tcg.pack_id = tcg_list[1].trim();
-            card_json.tcg.date = tcg_list[0].trim();
+            }).sort()[0];
+            if(tcg_list != undefined){
+                tcg_list = tcg_list.trim().split('\n');
+                card_json.tcg.pack = tcg_list[2].trim();
+                card_json.tcg.pack_id = tcg_list[1].trim();
+                card_json.tcg.date = tcg_list[0].trim();
+            }
 
             //OCG Pack Info
-            ocg_list = $('.navbox-list caption').next().next().text().trim().split('\n\n\n').filter(function(n){ 
+            ocg_list = $('.navbox-list caption').next().next().text().trim().split('\n \n');
+            ocg_list = ocg_list.filter(function(n){ 
                 return n.includes('-JP'); 
-            }).sort(function(primary, secondary){
-                return (new Date(primary.date) - new Date(secondary.date));
-            })[0].trim().split('\n');
-            card_json.ocg.pack = ocg_list[2].trim();
-            card_json.ocg.pack_id = ocg_list[1].trim();
-            card_json.ocg.date = ocg_list[0].trim();
+            }).sort()[0];
+            if(ocg_list != undefined){
+                ocg_list = ocg_list.trim().split('\n');
+                card_json.ocg.pack = ocg_list[2].trim();
+                card_json.ocg.pack_id = ocg_list[1].trim();
+                card_json.ocg.date = ocg_list[0].trim();
+            }
 
+            if(!isNaN(card.Passcode)){
             card_json.id = parseInt(card.Passcode);
+            }
+            else{
+                if(ocg_list != undefined){
+                    card_json.id = parseInt(PRERELEASE[card_json.ocg.pack_id.split('-JP')[0]] + card_json.ocg.pack_id.split('-JP')[1]);
+                }
+                else{
+                    card_json.id = parseInt(PRERELEASE[card_json.ocg.pack_id.split('-EN')[0]] + card_json.ocg.pack_id.split('-EN')[1]);
+                }
+            }
             card_json.setcode = setcode;
             if(card['Card type'] == '\nMonster ') {
                 card_json.type = MONSTER_TYPE[(card.Types.split(' / ')[1] + ' / ' + card.Types.split(' / ')[2] + ' / ' + card.Types.split(' / ')[3]).replace('/ undefined','').replace('  / undefined','').trim()];
@@ -161,7 +176,7 @@ lineReader.on('line', function (line) {
             card_json.picture = $(".cardtable-cardimage").eq(0).html().match(/<a href=\"(.*?)\"/)[1];
             //console.log(card);
             //console.log(card_json);
-            var wstream = fs.createWriteStream(card_json.id+'.json');
+            var wstream = fs.createWriteStream('C:\\Users\\auron\\OneDrive\\Documents\\GitHub\\YGO_DB\\http\\json\\'+card_json.id+'.json');
             wstream.write(JSON.stringify(card_json, null, 2));
             wstream.end();
             markers = undefined;
