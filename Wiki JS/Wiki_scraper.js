@@ -58,7 +58,13 @@ lineReader.on('line', function (line) {
             //TCG Pack Info
             tcg_list = $('.navbox-list caption').next().next().text().trim().split('\n \n');
             tcg_list = tcg_list.filter(function(n){ 
-                return n.includes('-EN'); 
+                return n.match(/\d\d\d\d\-\d\d\-\d\d/); 
+            });
+            tcg_list = tcg_list.filter(function(n){ 
+                return !n.match(/[\u3000-\u303F]|[\u3040-\u309F]|[\u30A0-\u30FF]|[\uFF00-\uFFEF]|[\u4E00-\u9FAF]|[\u2605-\u2606]|[\u2190-\u2195]|\u203B/g); 
+            });
+            tcg_list = tcg_list.filter(function(n){ 
+                return !n.match(/\-[A-Z][0-9]/g); 
             }).sort()[0];
             if(tcg_list != undefined){
                 tcg_list = tcg_list.trim().split('\n');
@@ -70,7 +76,10 @@ lineReader.on('line', function (line) {
             //OCG Pack Info
             ocg_list = $('.navbox-list caption').next().next().text().trim().split('\n \n');
             ocg_list = ocg_list.filter(function(n){ 
-                return n.includes('-JP'); 
+                return n.match(/\d\d\d\d\-\d\d\-\d\d/); 
+            });
+            ocg_list = ocg_list.filter(function(n){ 
+                return n.match(/[\u3000-\u303F]|[\u3040-\u309F]|[\u30A0-\u30FF]|[\uFF00-\uFFEF]|[\u4E00-\u9FAF]|[\u2605-\u2606]|[\u2190-\u2195]|\u203B/g); 
             }).sort()[0];
             if(ocg_list != undefined){
                 ocg_list = ocg_list.trim().split('\n');
@@ -118,6 +127,7 @@ lineReader.on('line', function (line) {
                         else{
                             card_json.def = parseInt(card['ATK / DEF'].split(' / ')[1]);
                         }
+                        card_json.level = parseInt(card.Level);
                     }
                     else{
                         if(card['ATK / LINK'].split(' / ')[0].trim() == '?'){
