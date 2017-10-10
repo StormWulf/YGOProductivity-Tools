@@ -1,22 +1,23 @@
 var scraperjs = require('scraperjs'),
+    input_file = require('./input.json'),
     fs = require("fs"),
+    async = require("async"),
+    ALIAS = require('./alias.json'),
     SETCODES = require('./setcode.json'),
     ATTRIBUTES = require('./attributes.json'),
     RACE = require('./race.json'),
     MONSTER_TYPE = require('./monster_type.json'),
     ST_TYPE = require('./st_type.json'),
     PRERELEASE = require('./prerelease.json'),
-    markers,
-    lineReader = require('readline').createInterface({
-        input: require('fs').createReadStream('./input.txt')
-      });
-lineReader.on('line', function (line) {
+    markers;
+
+async.each(input_file, function (line, next){
     line = line.replace('_',' ').trim();
-    console.log('Reading: '+line);
     scraperjs.StaticScraper.create()
         .request({ url:'http://yugioh.wikia.com/wiki/'+line })
         .scrape(function($) {
             // Setcode operation
+            console.log('Reading: '+line);
             setcode = []; 
             $('dt').filter(function() {
                 return $(this).text().match(/Archetypes and series(.*)/);
@@ -64,7 +65,7 @@ lineReader.on('line', function (line) {
                 return !n.match(/[\u3000-\u303F]|[\u3040-\u309F]|[\u30A0-\u30FF]|[\uFF00-\uFFEF]|[\u4E00-\u9FAF]|[\u2605-\u2606]|[\u2190-\u2195]|\u203B/g); 
             });
             tcg_list = tcg_list.filter(function(n){ 
-                return !n.match(/\-[A-Z][0-9]/g); 
+                return !n.match(/\-[A-Z][0-9]|\-KR/); 
             }).sort()[0];
             if(tcg_list != undefined){
                 tcg_list = tcg_list.trim().split('\n');
@@ -96,17 +97,24 @@ lineReader.on('line', function (line) {
                     card_json.id = parseInt(PRERELEASE[card_json.ocg.pack_id.split('-JP')[0]] + card_json.ocg.pack_id.split('-JP')[1]);
                 }
                 else{
-                    card_json.id = parseInt(PRERELEASE[card_json.tcg.pack_id.split('-EN')[0]] + card_json.tcg.pack_id.split('-EN')[1]);
+                    card_json.id = parseInt(PRERELEASE[card_json.tcg.pack_id.split('-DE')[0]] + card_json.tcg.pack_id.split('-DE')[1]);
                 }
             }
+
             card_json.setcode = setcode;
             if(card['Card type'] == '\nMonster ') {
-                card_json.type = MONSTER_TYPE[(card.Types.split(' / ')[1] + ' / ' + card.Types.split(' / ')[2] + ' / ' + card.Types.split(' / ')[3]).replace('/ undefined','').replace('  / undefined','').trim()];
-                if (card.Types.split(' / ')[1] == 'Xyz') {
+                if(card.Types){
+                    m_types = card.Types;
+                }
+                else{
+                    m_types = card.Type + ' / Normal';
+                }
+                card_json.type = MONSTER_TYPE[(m_types.split(' / ')[1] + ' / ' + m_types.split(' / ')[2] + ' / ' + m_types.split(' / ')[3]).replace('/ undefined','').replace('  / undefined','').trim()];
+                if (m_types.split(' / ')[1] == 'Xyz') {
                     card_json.level = parseInt(card.Rank);
                 }
-                if (card.Types.split(' / ')[1] == 'Pendulum' || card.Types.split(' / ')[2] == 'Pendulum'){
-                    if (card.Types.split(' / ')[1] == 'Xyz') {
+                if (m_types.split(' / ')[1] == 'Pendulum' || m_types.split(' / ')[2] == 'Pendulum'){
+                    if (m_types.split(' / ')[1] == 'Xyz') {
                         card_json.level = parseInt('0x' + parseInt(card['Pendulum Scale']).toString(16) + '0' + parseInt(card['Pendulum Scale']).toString(16) + '000' + parseInt(card.Rank).toString(16),16);                   
                     }
                     else {
@@ -114,7 +122,7 @@ lineReader.on('line', function (line) {
                     }
                 }
                 else {
-                    if(card.Types.split(' / ')[1] != 'Link') {
+                    if(m_types.split(' / ')[1] != 'Link') {
                         if(card['ATK / DEF'].split(' / ')[0].trim() == '?'){
                             card_json.atk = -2;
                         }
@@ -167,7 +175,7 @@ lineReader.on('line', function (line) {
                         card_json.links = links;
                     }
                 }
-                card_json.race = RACE[card.Types.split(' / ')[0].trim()];
+                card_json.race = RACE[m_types.split(' / ')[0].trim()];
                 card_json.attribute = ATTRIBUTES[card.Attribute.trim()];
             }
             else {
@@ -179,7 +187,10 @@ lineReader.on('line', function (line) {
                 card_json.attribute = 0;
             }
             card_json.name = card.English.trim().replace('Check translation','');
-            card_json.desc = $(".navbox-list").eq(0).html().replace('<br>','\n').replace(/<.*?>/g,'').replace(/&apos;/g, "'").replace(/&quot;/g, '"').replace(/&gt;/g, '>').replace(/&lt;/g, '<').replace(/&amp;/g, '&').replace(/&#x2019;/g, "'").replace(/&#x25CF;/g, "●").replace(/\n /g, "\n").trim();
+            card_json.desc = $(".navbox-list").eq(0).html().replace(/\<br\>/g,'\n').replace(/<.*?>/g,'').replace(/&apos;/g, "'").replace(/&quot;/g, '"').replace(/&gt;/g, '>').replace(/&lt;/g, '<').replace(/&amp;/g, '&').replace(/&#x2019;/g, "'").replace(/&#x25CF;/g, "●").replace(/\n /g, "\n").trim();
+            if(card_json.desc.match(/\(This card's name is always treated as \"(.*)\"/)){
+                card_json.alias = parseInt(ALIAS[card_json.desc.match(/\(This card's name is always treated as \"(.*)\"/)[1]]);
+            }
             if(markers !== undefined) {
                 card_json.desc = 'Link Arrows: ' + markers + '\n\n' + card_json.desc;
             }
@@ -187,8 +198,11 @@ lineReader.on('line', function (line) {
             //console.log(card);
             //console.log(card_json);
             var wstream = fs.createWriteStream('C:\\Users\\auron\\OneDrive\\Documents\\GitHub\\YGO_DB\\http\\json\\'+card_json.id+'.json');
-            wstream.write(JSON.stringify(card_json, null, 2));
+            wstream.write(JSON.stringify(card_json, null, 4));
             wstream.end();
             markers = undefined;
+            next();
         });
-    });
+    }), function(err) {
+        console.log("All Done");
+    };
