@@ -1,5 +1,5 @@
 var scraperjs = require('scraperjs'),
-    input_file = require('./input.json'),
+    input_file = require('./scraper_input.json'),
     fs = require("fs"),
     async = require("async"),
     ALIAS = require('./alias.json'),
@@ -113,30 +113,29 @@ async.each(input_file, function (line, next){
                 if (m_types.split(' / ')[1] == 'Xyz') {
                     card_json.level = parseInt(card.Rank);
                 }
-                if (m_types.split(' / ')[1] == 'Pendulum' || m_types.split(' / ')[2] == 'Pendulum'){
-                    if (m_types.split(' / ')[1] == 'Xyz') {
-                        card_json.level = parseInt('0x' + parseInt(card['Pendulum Scale']).toString(16) + '0' + parseInt(card['Pendulum Scale']).toString(16) + '000' + parseInt(card.Rank).toString(16),16);                   
+                if(m_types.split(' / ')[1] != 'Link') {
+                    if(card['ATK / DEF'].split(' / ')[0].trim() == '?'){
+                        card_json.atk = -2;
                     }
-                    else {
-                        card_json.level = parseInt('0x' + parseInt(card['Pendulum Scale']).toString(16) + '0' + parseInt(card['Pendulum Scale']).toString(16) + '000' + parseInt(card.Level).toString(16),16);
+                    else{
+                        card_json.atk = parseInt(card['ATK / DEF'].split(' / ')[0]);
+                    }
+                    if(card['ATK / DEF'].split(' / ')[1].trim() == '?'){
+                        card_json.def = -2;
+                    }
+                    else{
+                        card_json.def = parseInt(card['ATK / DEF'].split(' / ')[1]);
+                    }
+                    card_json.level = parseInt(card.Level);
+                    if (m_types.split(' / ')[1] == 'Pendulum' || m_types.split(' / ')[2] == 'Pendulum'){
+                        if (m_types.split(' / ')[1] == 'Xyz') {
+                            card_json.level = parseInt('0x' + parseInt(card['Pendulum Scale']).toString(16) + '0' + parseInt(card['Pendulum Scale']).toString(16) + '000' + parseInt(card.Rank).toString(16),16);                   
+                        }
+                        else {
+                            card_json.level = parseInt('0x' + parseInt(card['Pendulum Scale']).toString(16) + '0' + parseInt(card['Pendulum Scale']).toString(16) + '000' + parseInt(card.Level).toString(16),16);
+                        }
                     }
                 }
-                else {
-                    if(m_types.split(' / ')[1] != 'Link') {
-                        if(card['ATK / DEF'].split(' / ')[0].trim() == '?'){
-                            card_json.atk = -2;
-                        }
-                        else{
-                            card_json.atk = parseInt(card['ATK / DEF'].split(' / ')[0]);
-                        }
-                        if(card['ATK / DEF'].split(' / ')[1].trim() == '?'){
-                            card_json.def = -2;
-                        }
-                        else{
-                            card_json.def = parseInt(card['ATK / DEF'].split(' / ')[1]);
-                        }
-                        card_json.level = parseInt(card.Level);
-                    }
                     else{
                         if(card['ATK / LINK'].split(' / ')[0].trim() == '?'){
                             card_json.atk = -2;
@@ -174,7 +173,6 @@ async.each(input_file, function (line, next){
                         }
                         card_json.links = links;
                     }
-                }
                 card_json.race = RACE[m_types.split(' / ')[0].trim()];
                 card_json.attribute = ATTRIBUTES[card.Attribute.trim()];
             }
