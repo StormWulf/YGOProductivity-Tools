@@ -19,18 +19,22 @@ async.eachLimit(input_file, 100, function (line, next){
 
 function bad_pages() {
     if(bad_page.length){
-        console.log('Problem pages detected, running with different URL query');
-        async.eachLimit(bad_page, 100, function (line, next){
+        //console.log('Problem pages detected, running with different URL query');
+        async.each(bad_page, function (line, next){
             var filename = 'C:\\Users\\auron\\OneDrive\\Documents\\GitHub\\YGO_DB\\http\\json\\' + String(line) + '.json';
             var card_json = jsonfile.readFileSync(filename);
+            console.log("Retrying: "+card_json.name);
             if(card_json.tcg.pack_id != undefined){
                 wiki_url = card_json.tcg.pack_id;
             }
-            else{
+            else if(card_json.ocg.pack_id != undefined){
                 wiki_url = card_json.ocg.pack_id;
             }
+            else{
+                wiki_url = card_json.name+'_(card)';
+            }
             json_create(card_json, wiki_url, filename, next);
-            bad_page.pop(card_json.id);
+            //bad_page.pop(card_json.id);
         });
     }
 }
@@ -121,6 +125,7 @@ function json_create(card_json, wiki_url, filename, next) {
             bad_pages();         
         }  
         sleep.sleep(3);
+        next();
     });
 }
 
@@ -133,7 +138,7 @@ function jQuery_data($) {
         });
     });
     card.desc = $(".navbox-list").eq(0).html().replace(/\<br\>/g,'\n').replace(/<.*?>/g,'').replace(/&apos;/g, "'").replace(/&quot;/g, '"').replace(/&gt;/g, '>').replace(/&lt;/g, '<').replace(/&amp;/g, '&').replace(/&#x2019;/g, "'").replace(/&#x25CF;/g, "●").replace(/\n /g, "\n").trim();
-    card.picture = $(".cardtable-cardimage").eq(0).html().match(/<a href=\"(.*?)\"/)[1];
+    card.picture = $(".cardtable-cardimage").eq(0).html().match(/<a href=\"(.*?)\/revision/)[1];
     // Setcode operation
     setcode_arr = []; 
     $('dt').filter(function() {
